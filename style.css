@@ -45,6 +45,22 @@
     overflow: hidden;
   }
   
+  body,
+  button,
+  a,
+  .mc-button,
+  .minecraft-text {
+    cursor: url('assets/images/mc-carrot.png') 0 0, auto; /* carrot cursor */
+  }
+  
+  button:hover,
+  a:hover,
+  .mc-button:hover,
+  .minecraft-text:hover {
+    cursor: url('assets/images/mc-bunny.png') 6 0, auto; /* bunny cursor on hover */
+  }
+
+
   .menu-container {
     position: absolute;
     top: 50%;
