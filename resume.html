@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kush Gupta - Resume</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-wrap {
+        text-align: center;
+        padding: 40px 20px;
+        font-family: 'Minecraftia', sans-serif;
+        color: white;
+    }
+
+    .resume-frame {
+        aspect-ratio: 8.5 / 11;        /* maintains true resume shape */
+        width: min(100%, 1000px);       /* max width limit for large screens */
+        height: auto;                  /* let height adjust automatically */
+        border: 2px solid #000;
+        image-rendering: pixelated;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .mc-button {
+      margin-bottom: 30px;
+    }
+
+    body {
+        overflow-y: auto; /* allow vertical scroll */
+    }
+
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="page-wrap">
+    <button class="mc-button" onclick="location.href='index.html'">
+      <div class="minecraft-text">Back</div>
+    </button>
+
+    <h2 class="section-title" style="margin-bottom: 20px;">resume</h2>
+
+    <iframe 
+      src="assets/docs/Kush_Gupta_Resume.pdf#zoom=page-width" 
+      class="resume-frame" 
+      frameborder="0"
+    >
+      Your browser does not support PDF embedding.
+      <a href="assets/docs/Kush_Gupta_Resume.pdf">Download it instead</a>.
+    </iframe>
+  </div>
+</body>
+</html>
