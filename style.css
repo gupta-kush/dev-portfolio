@@ -60,12 +60,33 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url("assets/images/background.jpg"); /* your chosen image */
+    background-image: url("assets/images/background.jpg");
     background-size: cover;
     background-position: center;
     z-index: -1;
   }
   
+  .title-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 30px;
+  }
+
+  .splash {
+    position: absolute;
+    top: 60%;
+    left: 100%; /* position immediately to the right of title */
+    margin-left: -110px; /* small left shift to overlap a bit */
+    transform-origin: left center; /* rotate around the left edge */
+    transform: rotate(-20deg);
+    font-family: 'Minecraftia', sans-serif;
+    font-size: 18px;
+    color: #ffff00;
+    text-shadow: 2px 2px #000a;
+    white-space: nowrap; /* prevent wrapping */
+    animation: bounce 3s infinite ease-in-out;
+  }
+
   /* Minecraft-style Title */
   .title {
     font-family: 'Minecrafter', sans-serif;
@@ -75,13 +96,20 @@
     margin-bottom: 10px;
   }
   
-  /* Splash Text */
-  .splash {
-    color: #ffff00;
-    font-size: 18px;
-    transform: rotate(-10deg);
-    margin-bottom: 30px;
-    text-shadow: 2px 2px #000a;
+  .site-title {
+    display: block;              /* forces it to behave like a block element */
+    margin: 0 auto -10px auto;    /* top - right - bottom - left */
+    max-width: 90%;
+    height: auto;
+    image-rendering: pixelated;
+  }
+  
+  .site-subtitle {
+    display: block;
+    margin: 0 auto 0 auto;
+    max-width: 80%;
+    height: auto;
+    image-rendering: pixelated;
   }
   
   /* Menu Container (Grid) */
@@ -97,8 +125,15 @@
       '. . .'
       '. fourth .';
     grid-gap: 8px;
+    margin: 0 auto;
+    justify-content: center; /* centers the entire grid with a png title */
+
   }
   
+  .menu-container > * {
+    margin-left: auto;
+    margin-right: auto;
+  }
   /* Button Placement */
   .mc-menu .mc-button:nth-child(1) { grid-area: first; }
   .mc-menu .mc-button:nth-child(2) { grid-area: second; }
@@ -156,3 +191,13 @@
     width: 100%;
     text-align: center;
   }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: rotate(-20deg) translateY(0);
+    }
+    50% {
+      transform: rotate(-20deg) translateY(-5px);
+    }
+  }
+  
