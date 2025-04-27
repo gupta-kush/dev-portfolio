@@ -237,3 +237,31 @@
     }
   }
   
+  .contact-form {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .contact-input, .contact-textarea {
+    font-family: 'Minecraftia', sans-serif;
+    background: #666;
+    color: white;
+    border: 2px solid #222;
+    padding: 10px;
+    margin-bottom: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: inset -2px -2px #0006, inset 2px 2px #fff7;
+    image-rendering: pixelated;
+  }
+  
+  .contact-input::placeholder, .contact-textarea::placeholder {
+    color: #ccc;
+  }
+  
+  .contact-textarea {
+    height: 150px;
+    resize: vertical;
+  }

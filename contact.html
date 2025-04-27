@@ -52,6 +52,47 @@
       <p>GitHub: <a href="https://github.com/gupta-kush" target="_blank">github.com/gupta-kush</a></p>
       <p>LinkedIn: <a href="https://www.linkedin.com/in/kush-gupta-623430243/" target="_blank">linkedin.com/in/kush-gupta-623430243/</a></p>
     </div>
+
+
+    <h3 class="section-title" style="margin-top: 40px;">Reach Out</h3>
+
+    <form id="contact-form" class="contact-form" action="https://formspree.io/f/mblolazp" method="POST" onsubmit="return submitForm(event)">
+      <input type="text" name="name" placeholder="Your Name" required class="contact-input" />
+      <input type="email" name="_replyto" placeholder="Your Email" required class="contact-input" />
+      <textarea name="message" placeholder="Your Message" required class="contact-textarea"></textarea>
+      <button type="submit" class="mc-button" style="margin-top: 20px;">
+        <div class="minecraft-text">Send Message</div>
+      </button>
+    </form>
+
+    <p id="success-message" style="display:none; color:#00FF00; margin-top:20px;">Message sent successfully! 🎉</p>
+
+
   </div>
+
+  <script>
+    function submitForm(event) {
+      event.preventDefault(); // Stop normal form submit
+      const form = document.getElementById('contact-form');
+    
+      fetch(form.action, {
+        method: form.method,
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      }).then(response => {
+        if (response.ok) {
+          form.reset(); // Clear the form
+          document.getElementById('success-message').style.display = 'block';
+        } else {
+          alert('Oops! Something went wrong.');
+        }
+      }).catch(error => {
+        alert('Oops! Something went wrong.');
+      });
+    
+      return false;
+    }
+    </script>
+
 </body>
 </html>
