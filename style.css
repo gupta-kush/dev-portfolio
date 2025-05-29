@@ -41,24 +41,27 @@
   
   body {
     margin: 0;
-    font-family: Minecraftia, sans-serif;
+    font-family: 'Minecraftia', sans-serif;
     overflow: hidden;
   }
   
-  body,
+
+  /* carrot cursor */
+  /* body,
   button,
   a,
   .mc-button,
   .minecraft-text {
-    cursor: url('assets/images/mc-carrot.png') 0 0, auto; /* carrot cursor */
-  }
+    cursor: url('assets/images/mc-carrot.png') 0 0, auto; 
+  } */
   
-  button:hover,
+  /* bunny cursor on hover */
+  /* button:hover,
   a:hover,
   .mc-button:hover,
   .minecraft-text:hover {
-    cursor: url('assets/images/mc-bunny.png') 6 0, auto; /* bunny cursor on hover */
-  }
+    cursor: url('assets/images/mc-bunny.png') 6 0, auto; 
+  } */
 
 
   .menu-container {
@@ -275,7 +278,7 @@
   }
   
   .project-card {
-    font-family: 'Minecraftia', sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     padding: 20px;
