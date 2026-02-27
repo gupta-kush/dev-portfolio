@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Anton", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  :root {
+    /* Warm Espresso / Terracotta Palette (Dark) */
+    --color-bg: #1a1514;
+    --color-text: #f2ebe3;
+    --color-accent: #e85d38;
+    --color-muted: #8c7d77;
+    --color-surface: #2d2523;
+  }
+
+  :root.light {
+    /* Warm Sand / Terracotta Palette (Light) */
+    --color-bg: #f2ebe3;
+    --color-text: #1a1514;
+    --color-accent: #e85d38;
+    --color-muted: #8c7d77;
+    --color-surface: #e5dcd3;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    @apply antialiased selection:bg-[var(--color-accent)] selection:text-white transition-colors duration-500;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
