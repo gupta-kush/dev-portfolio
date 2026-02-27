@@ -2,7 +2,16 @@ import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
 
-const PHOTOS = [
+interface Photo {
+  id: number;
+  url: string;
+  title: string;
+  description: string;
+  camera: string;
+  settings: string;
+}
+
+const PHOTOS: Photo[] = [
   {
     id: 1,
     url: "https://picsum.photos/seed/kushstreet/1200/900",
@@ -57,7 +66,7 @@ function PhotoCard({
   photo,
   onClick,
 }: {
-  photo: any;
+  photo: Photo;
   onClick: () => void;
   key?: string | number;
 }) {
@@ -83,7 +92,7 @@ function PhotoCard({
 }
 
 export function Photography() {
-  const [selectedPhoto, setSelectedPhoto] = useState<any>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
   return (
     <section
