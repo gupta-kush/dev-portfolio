@@ -2,16 +2,16 @@ import { SnakeGame } from "./SnakeGame";
 
 const PROJECTS = [
   {
-    title: "Youtube to NotebookLM Browser Extension",
+    title: "YT to NLM Browser Extension",
     description:
-      "A browser extension that seamlessly extracts transcripts and metadata from YouTube videos and sends them directly to Google's NotebookLM for instant summarization and chat.",
+      "A browser extension that seamlessly extracts transcripts from YouTube videos and sends them directly to Google's NotebookLM for instant summarization and chat.",
     tech: ["TypeScript", "React", "Chrome Extension API", "NotebookLM"],
     github: "#",
   },
   {
     title: "Mugdown Cafe",
     description:
-      "Realtime Fullstack POS Web App for a local cafe. Features order management, inventory tracking, and real-time updates for kitchen staff using WebSockets.",
+      "A Fullstack POS Web App for a local cafe. Features order management, inventory tracking, and real-time updates for kitchen staff using WebSockets.",
     tech: ["Next.js", "Tailwind", "PostgreSQL", "Socket.io"],
     github: "#",
     link: "#",
