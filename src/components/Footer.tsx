@@ -9,19 +9,19 @@ export function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto font-mono uppercase tracking-widest text-sm">
         <div className="flex flex-col gap-4">
           <p className="text-[var(--color-bg)]/60 mb-4">Socials</p>
-          <a href="#" className="hover:line-through">
+          <a href="#" className="hover:underline underline-offset-4">
             GitHub
           </a>
-          <a href="#" className="hover:line-through">
+          <a href="#" className="hover:underline underline-offset-4">
             LinkedIn
           </a>
-          <a href="#" className="hover:line-through">
+          <a href="#" className="hover:underline underline-offset-4">
             Twitter
           </a>
         </div>
         <div className="flex flex-col gap-4">
           <p className="text-[var(--color-bg)]/60 mb-4">Contact</p>
-          <a href="mailto:hello@kushgupta.dev" className="hover:line-through">
+          <a href="mailto:hello@kushgupta.dev" className="hover:underline underline-offset-4">
             hello@kushgupta.dev
           </a>
         </div>
