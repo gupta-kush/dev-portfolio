@@ -2,11 +2,11 @@ import { SnakeGame } from "./SnakeGame";
 
 const PROJECTS = [
   {
-    title: "YT to NLM Browser Extension",
+    title: "Naked URLs",
     description:
-      "A browser extension that seamlessly extracts transcripts from YouTube videos and sends them directly to Google's NotebookLM for instant summarization and chat.",
-    tech: ["TypeScript", "React", "Chrome Extension API", "NotebookLM"],
-    github: "#",
+      "A Chrome extension that automatically removes tracking parameters from URLs as you browse. Works in the background using Chrome's declarativeNetRequest API to protect your privacy.",
+    tech: ["JavaScript", "Chrome Extension API", "Manifest V3"],
+    github: "https://github.com/gupta-kush/naked-urls",
   },
   {
     title: "Mugdown Cafe",
@@ -21,7 +21,7 @@ const PROJECTS = [
     description:
       "A Model Context Protocol server that allows AI assistants to interact with the Spotify API. Search tracks, control playback, and manage playlists directly from your AI agent.",
     tech: ["TypeScript", "MCP", "Spotify API", "Node.js"],
-    github: "#",
+    github: "https://github.com/gupta-kush/spotify-mcp",
   },
   {
     title: "Retro Snake",
