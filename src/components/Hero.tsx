@@ -1,10 +1,42 @@
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 
 export function Hero() {
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  
+  const firstName = "KUSH".split("");
+  const lastName = "GUPTA".split("");
+
+  const letterVariants = {
+    hidden: { y: "100%", opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } 
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+    }
+  };
+
   return (
-    <section className="h-screen w-full flex flex-col justify-center px-6 md:px-12 relative overflow-hidden">
-      {/* Background Image - Photography incorporated subtly */}
-      <div className="absolute right-0 top-0 w-full md:w-[60vw] h-full opacity-50">
+    <section ref={containerRef} className="h-screen w-full flex flex-col justify-center px-6 md:px-12 relative overflow-hidden">
+      {/* Background Image - with Parallax */}
+      <motion.div 
+        style={{ y: backgroundY }}
+        className="absolute right-0 top-0 w-full md:w-[60vw] h-[120%] opacity-50 origin-top"
+      >
         <img
           src="https://picsum.photos/seed/kushhero2/1200/1600"
           className="w-full h-full object-cover"
@@ -13,25 +45,39 @@ export function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)] via-[var(--color-bg)]/80 to-transparent" />
         <div className="absolute inset-0 bg-[var(--color-bg)]/30 mix-blend-multiply" />
-      </div>
+      </motion.div>
 
       <div className="relative z-10">
         <motion.h1
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-[22vw] md:text-[16vw] leading-[0.8] tracking-tighter uppercase text-[var(--color-text)] mix-blend-difference"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="font-display text-[22vw] md:text-[16vw] leading-[0.8] tracking-tighter uppercase text-[var(--color-text)] mix-blend-difference flex flex-col"
         >
-          KUSH
-          <br />
-          GUPTA
+          <div className="flex overflow-hidden">
+            {firstName.map((letter, i) => (
+              <motion.span key={`f-${i}`} variants={letterVariants} className="inline-block">
+                {letter}
+              </motion.span>
+            ))}
+          </div>
+          <div className="flex overflow-hidden">
+            {lastName.map((letter, i) => (
+              <motion.span key={`l-${i}`} variants={letterVariants} className="inline-block">
+                {letter === " " ? "\u00A0" : letter}
+              </motion.span>
+            ))}
+          </div>
         </motion.h1>
       </div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
+        initial={{ opacity: 0, y: 0 }}
+        animate={{ opacity: 1, y: [0, -10, 0] }}
+        transition={{ 
+          opacity: { duration: 1, delay: 0.8 },
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.5 }
+        }}
         className="absolute bottom-12 left-6 md:left-12 flex flex-col md:flex-row gap-4 md:gap-12 font-mono text-xs md:text-sm uppercase tracking-widest text-[var(--color-muted)] z-20"
       >
         <p className="flex items-center gap-4">
