@@ -15,7 +15,6 @@ const PROJECTS = [
       "A Fullstack POS Web App for a local cafe. Features order management, inventory tracking, and real-time updates for kitchen staff using WebSockets.",
     tech: ["Next.js", "Tailwind", "PostgreSQL", "Socket.io"],
     github: "#",
-    link: "#",
   },
   {
     title: "Naked URLs",
@@ -101,16 +100,6 @@ export function Projects() {
                         className="text-xs font-mono uppercase tracking-widest hover:text-[var(--color-accent)] text-[var(--color-text)] transition-colors underline underline-offset-4"
                       >
                         Source
-                      </a>
-                    )}
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-mono uppercase tracking-widest hover:text-[var(--color-accent)] text-[var(--color-text)] transition-colors underline underline-offset-4"
-                      >
-                        Live
                       </a>
                     )}
                   </div>
