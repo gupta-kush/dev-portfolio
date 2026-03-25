@@ -1,12 +1,13 @@
 import { SnakeGame } from "./SnakeGame";
+import { motion } from "motion/react";
 
 const PROJECTS = [
   {
-    title: "Naked URLs",
+    title: "Spotify MCP Server",
     description:
-      "A Chrome extension that automatically removes tracking parameters from URLs as you browse. Works in the background using Chrome's declarativeNetRequest API to protect your privacy.",
-    tech: ["JavaScript", "Chrome Extension API", "Manifest V3"],
-    github: "https://github.com/gupta-kush/naked-urls",
+      "A Model Context Protocol server that allows AI assistants to interact with the Spotify API. Search tracks, control playback, and manage playlists directly from your AI agent.",
+    tech: ["TypeScript", "MCP", "Spotify API", "Node.js"],
+    github: "https://github.com/gupta-kush/spotify-mcp",
   },
   {
     title: "Mugdown Cafe",
@@ -17,11 +18,11 @@ const PROJECTS = [
     link: "#",
   },
   {
-    title: "Spotify MCP Server",
+    title: "Naked URLs",
     description:
-      "A Model Context Protocol server that allows AI assistants to interact with the Spotify API. Search tracks, control playback, and manage playlists directly from your AI agent.",
-    tech: ["TypeScript", "MCP", "Spotify API", "Node.js"],
-    github: "https://github.com/gupta-kush/spotify-mcp",
+      "A Chrome extension that automatically removes tracking parameters from URLs as you browse. Works in the background using Chrome's declarativeNetRequest API to protect your privacy.",
+    tech: ["JavaScript", "Chrome Extension API", "Manifest V3"],
+    github: "https://github.com/gupta-kush/naked-urls",
   },
   {
     title: "Retro Snake",
@@ -37,7 +38,13 @@ export function Projects() {
     <section id="code" className="py-32 px-6 md:px-12 max-w-screen-2xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-4">
-          <div className="sticky top-32">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="sticky top-32"
+          >
             <h2 className="font-display text-6xl md:text-8xl leading-[0.8] uppercase mb-6 text-[var(--color-text)]">
               Recent
               <br />
@@ -46,17 +53,24 @@ export function Projects() {
             <p className="font-mono text-sm text-[var(--color-muted)] uppercase tracking-widest max-w-xs leading-relaxed">
               Building robust systems and crafting digital experiences.
             </p>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="lg:col-span-8 flex flex-col gap-16 md:gap-24">
+        <div className="lg:col-span-8 flex flex-col gap-16 md:gap-24 group/list">
           {PROJECTS.map((project, i) => (
-            <div key={i} className="group flex flex-col gap-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              key={i} 
+              className="group flex flex-col gap-6 transition-all duration-500 hover:!opacity-100 group-hover/list:opacity-30"
+            >
               <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 border-b border-[var(--color-surface)] pb-6">
-                <h3 className="text-3xl md:text-4xl font-medium tracking-tight text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+                <h3 className="text-3xl md:text-4xl font-medium tracking-tight text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors duration-300">
                   {project.title}
                 </h3>
-                <div className="font-mono text-xs text-[var(--color-muted)]">
+                <div className="font-mono text-xs text-[var(--color-muted)] transform group-hover:-translate-y-1 transition-transform duration-300">
                   0{i + 1}
                 </div>
               </div>
@@ -82,6 +96,8 @@ export function Projects() {
                     {project.github && (
                       <a
                         href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-xs font-mono uppercase tracking-widest hover:text-[var(--color-accent)] text-[var(--color-text)] transition-colors underline underline-offset-4"
                       >
                         Source
@@ -90,6 +106,8 @@ export function Projects() {
                     {project.link && (
                       <a
                         href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-xs font-mono uppercase tracking-widest hover:text-[var(--color-accent)] text-[var(--color-text)] transition-colors underline underline-offset-4"
                       >
                         Live
@@ -102,7 +120,7 @@ export function Projects() {
               {project.component && (
                 <div className="mt-4 w-full">{project.component}</div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
