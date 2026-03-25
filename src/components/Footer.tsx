@@ -1,27 +1,35 @@
+import { motion } from "motion/react";
+
 export function Footer() {
   return (
     <footer className="bg-[var(--color-accent)] text-[var(--color-bg)] py-32 px-6 md:px-12 selection:bg-[var(--color-bg)] selection:text-[var(--color-accent)]">
       <div className="max-w-[100vw] overflow-hidden">
-        <h2 className="font-display text-[18vw] leading-[0.8] uppercase text-center mb-20 tracking-tighter">
+        <motion.h2 
+          initial={{ y: "120%" }}
+          whileInView={{ y: 0 }}
+          viewport={{ once: true, margin: "0px 0px -20% 0px" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display text-[18vw] leading-[0.8] uppercase text-center mb-20 tracking-tighter"
+        >
           Let's Talk
-        </h2>
+        </motion.h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto font-mono uppercase tracking-widest text-sm">
         <div className="flex flex-col gap-4">
           <p className="text-[var(--color-bg)]/60 mb-4">Socials</p>
-          <a href="#" className="hover:underline underline-offset-4">
+          <a href="#" className="hover:underline underline-offset-4 group transition-transform hover:translate-x-2">
             GitHub
           </a>
-          <a href="#" className="hover:underline underline-offset-4">
+          <a href="#" className="hover:underline underline-offset-4 group transition-transform hover:translate-x-2">
             LinkedIn
           </a>
-          <a href="#" className="hover:underline underline-offset-4">
+          <a href="#" className="hover:underline underline-offset-4 group transition-transform hover:translate-x-2">
             Twitter
           </a>
         </div>
         <div className="flex flex-col gap-4">
           <p className="text-[var(--color-bg)]/60 mb-4">Contact</p>
-          <a href="mailto:hello@kushgupta.dev" className="hover:underline underline-offset-4">
+          <a href="mailto:hello@kushgupta.dev" className="hover:underline underline-offset-4 group transition-transform hover:translate-x-2">
             hello@kushgupta.dev
           </a>
         </div>
