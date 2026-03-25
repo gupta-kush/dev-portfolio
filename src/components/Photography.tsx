@@ -108,7 +108,8 @@ function PhotoCard({
 }) {
   return (
     <div
-      className="relative w-[300px] md:w-[450px] aspect-[4/3] shrink-0 overflow-hidden group rounded-sm cursor-pointer"
+      role="button"
+      className="relative w-[300px] md:w-[450px] aspect-[4/3] shrink-0 overflow-hidden group rounded-sm cursor-none"
       onClick={onClick}
     >
       <img
