@@ -29,27 +29,14 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
-    @apply antialiased selection:bg-[var(--color-accent)] selection:text-white transition-colors duration-500;
+    @apply antialiased selection:bg-[var(--color-accent)] selection:text-white transition-colors duration-500 cursor-none;
+  }
+
+  a, button, [role="button"] {
+    @apply cursor-none;
   }
 }
 
 html {
   scroll-behavior: smooth;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 40s linear infinite;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
 }

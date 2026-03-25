@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useAnimationFrame, useMotionValue } from "motion/react";
 import { X } from "lucide-react";
 
 interface Photo {
@@ -62,6 +62,42 @@ const PHOTOS: Photo[] = [
 // Duplicate for seamless marquee
 const MARQUEE_PHOTOS = [...PHOTOS, ...PHOTOS];
 
+function MarqueeContainer({ children }: { children: React.ReactNode }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const x = useMotionValue(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const currentSpeed = useRef(1.5);
+  
+  useAnimationFrame((t, delta) => {
+    const targetSpeed = isHovered ? 0.5 : 1.5;
+    // Smoothly interpolate current speed towards target speed
+    currentSpeed.current += (targetSpeed - currentSpeed.current) * 0.05;
+    
+    let newX = x.get() - (currentSpeed.current * (delta / 16));
+    
+    if (contentRef.current) {
+      const halfWidth = contentRef.current.scrollWidth / 2;
+      // Seamlessly reset when past halfway
+      if (Math.abs(newX) >= halfWidth) {
+        newX += halfWidth;
+      }
+    }
+    x.set(newX);
+  });
+
+  return (
+    <motion.div 
+      className="flex w-max gap-6 px-3"
+      style={{ x }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      ref={contentRef}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function PhotoCard({
   photo,
   onClick,
@@ -116,8 +152,8 @@ export function Photography() {
         </p>
       </div>
 
-      <div className="relative w-full flex overflow-hidden">
-        <div className="flex w-max animate-marquee gap-6 px-3">
+      <div className="relative w-full overflow-hidden">
+        <MarqueeContainer>
           {MARQUEE_PHOTOS.map((photo, i) => (
             <PhotoCard
               key={`${photo.id}-${i}`}
@@ -125,7 +161,7 @@ export function Photography() {
               onClick={() => setSelectedPhoto(photo)}
             />
           ))}
-        </div>
+        </MarqueeContainer>
       </div>
 
       <AnimatePresence>
