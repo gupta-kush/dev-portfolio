@@ -9,6 +9,7 @@ const PROJECTS = [
     tech: ["TypeScript", "MCP", "Spotify API", "Node.js"],
     github: "https://github.com/gupta-kush/spotify-mcp",
   },
+  /*
   {
     title: "Mugdown Cafe",
     description:
@@ -16,6 +17,7 @@ const PROJECTS = [
     tech: ["Next.js", "Tailwind", "PostgreSQL", "Socket.io"],
     github: "#",
   },
+  */
   {
     title: "Naked URLs",
     description:
