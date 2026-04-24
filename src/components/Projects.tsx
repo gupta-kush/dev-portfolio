@@ -1,4 +1,3 @@
-import { SnakeGame } from "./SnakeGame";
 import { motion } from "motion/react";
 
 const PROJECTS = [
@@ -9,28 +8,12 @@ const PROJECTS = [
     tech: ["TypeScript", "MCP", "Spotify API", "Node.js"],
     github: "https://github.com/gupta-kush/spotify-mcp",
   },
-  /*
-  {
-    title: "Mugdown Cafe",
-    description:
-      "A Fullstack POS Web App for a local cafe. Features order management, inventory tracking, and real-time updates for kitchen staff using WebSockets.",
-    tech: ["Next.js", "Tailwind", "PostgreSQL", "Socket.io"],
-    github: "#",
-  },
-  */
   {
     title: "Naked URLs",
     description:
       "A Chrome extension that automatically removes tracking parameters from URLs as you browse. Works in the background using Chrome's declarativeNetRequest API to protect your privacy.",
     tech: ["JavaScript", "Chrome Extension API", "Manifest V3"],
     github: "https://github.com/gupta-kush/naked-urls",
-  },
-  {
-    title: "Retro Snake",
-    description:
-      "A classic game built entirely in React. Use the arrow keys to play. A fun little interactive easter egg for visitors.",
-    tech: ["React", "Hooks", "Game Loop"],
-    component: <SnakeGame />,
   },
 ];
 
@@ -39,7 +22,7 @@ export function Projects() {
     <section id="code" className="py-32 px-6 md:px-12 max-w-screen-2xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -59,12 +42,12 @@ export function Projects() {
 
         <div className="lg:col-span-8 flex flex-col gap-16 md:gap-24 group/list">
           {PROJECTS.map((project, i) => (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              key={i} 
+              key={i}
               className="group flex flex-col gap-6 transition-all duration-500 hover:!opacity-100 group-hover/list:opacity-30"
             >
               <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 border-b border-[var(--color-surface)] pb-6">
@@ -107,10 +90,6 @@ export function Projects() {
                   </div>
                 </div>
               </div>
-
-              {project.component && (
-                <div className="mt-4 w-full">{project.component}</div>
-              )}
             </motion.div>
           ))}
         </div>

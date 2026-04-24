@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
+import { ReactionDiffusionCanvas } from "./Playground/pieces/canvas/ReactionDiffusionCanvas";
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null);
@@ -9,16 +10,16 @@ export function Hero() {
   });
 
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  
+
   const firstName = "KUSH".split("");
   const lastName = "GUPTA".split("");
 
   const letterVariants = {
     hidden: { y: "100%", opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1, 
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } 
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
     }
   };
 
@@ -32,17 +33,21 @@ export function Hero() {
 
   return (
     <section ref={containerRef} className="h-screen w-full flex flex-col justify-center px-6 md:px-12 relative overflow-hidden">
-      {/* Background Image - with Parallax */}
-      <motion.div 
+      {/* Reaction-diffusion backdrop with parallax */}
+      <motion.div
         style={{ y: backgroundY }}
-        className="absolute right-0 top-0 w-full md:w-[60vw] h-[120%] opacity-50 origin-top"
+        className="absolute right-0 top-0 w-full md:w-[65vw] h-[120%] origin-top"
       >
-        <img
-          src="https://picsum.photos/seed/kushhero2/1200/1600"
-          className="w-full h-full object-cover"
-          alt="Hero background"
-          referrerPolicy="no-referrer"
-        />
+        <div className="absolute inset-0 opacity-60">
+          <ReactionDiffusionCanvas
+            gridW={200}
+            gridH={130}
+            steps={3}
+            interactive={false}
+            autoSeedInterval={2200}
+            ariaLabel="Slow reaction-diffusion pattern"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)] via-[var(--color-bg)]/80 to-transparent" />
         <div className="absolute inset-0 bg-[var(--color-bg)]/30 mix-blend-multiply" />
       </motion.div>
@@ -74,7 +79,7 @@ export function Hero() {
       <motion.div
         initial={{ opacity: 0, y: 0 }}
         animate={{ opacity: 1, y: [0, -10, 0] }}
-        transition={{ 
+        transition={{
           opacity: { duration: 1, delay: 0.8 },
           y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.5 }
         }}

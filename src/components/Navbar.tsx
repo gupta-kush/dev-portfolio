@@ -34,8 +34,8 @@ export function Navbar() {
         <a href="#code" className="hover:text-[var(--color-accent)] transition-colors">
           Code
         </a>
-        <a href="#lens" className="hover:text-[var(--color-accent)] transition-colors">
-          Lens
+        <a href="#playground" className="hover:text-[var(--color-accent)] transition-colors">
+          Playground
         </a>
       </div>
     </motion.nav>
