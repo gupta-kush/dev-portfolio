@@ -16,30 +16,47 @@ const PALETTES: Palette[] = [
   { bg: "#0e1a1f", ink: "#dfe9ea", accent: "#f2a65a", muted: "#5a7782" },
   { bg: "#efe7d2", ink: "#2a261d", accent: "#7c5e3c", muted: "#7a7363" },
   { bg: "#f0e2d6", ink: "#1d1812", accent: "#36617e", muted: "#8b7d70" },
+  { bg: "#15191c", ink: "#e8e4dc", accent: "#9bd3a3", muted: "#5e6770" },
+  { bg: "#fbe9d4", ink: "#231b14", accent: "#1a1514", muted: "#7a6a5d" },
+  { bg: "#22201d", ink: "#f0e0c8", accent: "#d97c4a", muted: "#7a6f63" },
+  { bg: "#e6dcc8", ink: "#1a1514", accent: "#3a4a3c", muted: "#7a7060" },
+  { bg: "#1d1c2c", ink: "#e8e3f0", accent: "#e85d8c", muted: "#7c7a90" },
+  { bg: "#f2ece0", ink: "#1f1d1a", accent: "#5a8db5", muted: "#857d72" },
 ];
 
 const WORDS = [
+  // generic
   "SIGNAL", "NOISE", "INDEX", "DRAFT", "REWIND", "PROOF", "FLUX",
   "STATE", "MEMORY", "TRACE", "VECTOR", "PATCH", "BUILD", "RECALL",
-  "ASYNC", "RUNTIME", "OUTPUT", "SOURCE", "RENDER",
+  "ASYNC", "RUNTIME", "OUTPUT", "SOURCE", "RENDER", "FORK", "MERGE",
+  "BUFFER", "SYNTAX", "HEAP", "STACK", "QUEUE", "TOKEN", "LOCAL",
+  "REMOTE", "STATIC", "VOID",
+  // identity
+  "KUSH", "KG", "MADE BY KG", "GUPTA", "ENGINEER",
+  "DALLAS", "DALLAS · SF", "VOL. 26", "EDITION 01",
 ];
 
 const SUBTITLES = [
-  "ONE-OFF · GENERATED IN BROWSER",
+  "ONE OFF · GENERATED IN BROWSER",
   "EVERY RELOAD IS A NEW PRESS",
-  "NO TWO ARE THE SAME — UNLIKELY, ANYWAY",
+  "NO TWO ARE THE SAME, PROBABLY",
   "PROOF OF NOTHING IN PARTICULAR",
   "PRINTED BY A MACHINE WITH OPINIONS",
+  "FILE UNDER: TYPOGRAPHY",
+  "EDITION OF ONE",
+  "DRAFT 0 · NOT FOR REVIEW",
+  "FOR INTERNAL USE ONLY",
+  "MADE WHILE WAITING FOR A BUILD",
 ];
 
 interface Design {
   palette: Palette;
   word: string;
   subtitle: string;
-  variant: 0 | 1 | 2 | 3;
+  variant: 0 | 1 | 2 | 3 | 4 | 5;
   serial: string;
   date: string;
-  marks: { x: number; y: number; r: number; type: "circle" | "ring" | "x" }[];
+  marks: { x: number; y: number; r: number; type: "circle" | "ring" | "x" | "bar" }[];
   rules: number[];
 }
 
@@ -51,7 +68,7 @@ function generate(): Design {
   const palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
   const word = WORDS[Math.floor(Math.random() * WORDS.length)];
   const subtitle = SUBTITLES[Math.floor(Math.random() * SUBTITLES.length)];
-  const variant = Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3;
+  const variant = Math.floor(Math.random() * 6) as 0 | 1 | 2 | 3 | 4 | 5;
   const serial = `${pad(Math.floor(Math.random() * 9999), 4)}/${pad(Math.floor(Math.random() * 9999), 4)}`;
   const d = new Date();
   const date = `${d.getFullYear()}.${pad(d.getMonth() + 1, 2)}.${pad(d.getDate(), 2)}`;
@@ -59,7 +76,7 @@ function generate(): Design {
     x: 80 + Math.random() * 1040,
     y: 200 + Math.random() * 1100,
     r: 18 + Math.random() * 60,
-    type: (["circle", "ring", "x"] as const)[Math.floor(Math.random() * 3)],
+    type: (["circle", "ring", "x", "bar"] as const)[Math.floor(Math.random() * 4)],
   }));
   const rules = Array.from({ length: 2 + Math.floor(Math.random() * 4) }).map(() =>
     Math.random()
@@ -171,30 +188,86 @@ function PosterSVG({ design }: { design: Design }) {
         </g>
       );
     }
-    return (
-      <g>
-        <g transform={`translate(${W - 200}, 200) rotate(90)`}>
+    if (variant === 3) {
+      return (
+        <g>
+          <g transform={`translate(${W - 200}, 200) rotate(90)`}>
+            <text
+              x={0}
+              y={0}
+              fontFamily="Anton, sans-serif"
+              fontSize={420}
+              letterSpacing={-10}
+              fill={palette.ink}
+            >
+              {word}
+            </text>
+          </g>
           <text
-            x={0}
-            y={0}
+            x={80}
+            y={H - 200}
             fontFamily="Anton, sans-serif"
-            fontSize={420}
+            fontSize={280}
             letterSpacing={-10}
-            fill={palette.ink}
+            fill={palette.accent}
           >
-            {word}
+            KUSH
           </text>
         </g>
+      );
+    }
+    if (variant === 4) {
+      // Type stack: same word repeated, decreasing in size and opacity.
+      const sizes = [560, 380, 240, 140];
+      const ys = [560, 880, 1100, 1240];
+      return (
+        <g>
+          {sizes.map((s, i) => (
+            <text
+              key={i}
+              x={80}
+              y={ys[i]}
+              fontFamily="Anton, sans-serif"
+              fontSize={s}
+              letterSpacing={-12}
+              fill={i === 0 ? palette.ink : palette.accent}
+              opacity={1 - i * 0.18}
+            >
+              {word}
+            </text>
+          ))}
+        </g>
+      );
+    }
+    // variant === 5: split column. Word stacked vertically + giant numeral.
+    return (
+      <g>
         <text
-          x={80}
-          y={H - 200}
+          x={W / 2 - 80}
+          y={1180}
           fontFamily="Anton, sans-serif"
-          fontSize={280}
-          letterSpacing={-10}
-          fill={palette.accent}
+          fontSize={900}
+          letterSpacing={-30}
+          fill={palette.ink}
+          textAnchor="end"
         >
-          KUSH
+          {String(2026 % 100).padStart(2, "0")}
         </text>
+        <g transform={`translate(${W / 2 + 60}, 280)`}>
+          {word.split("").slice(0, 8).map((ch, i) => (
+            <text
+              key={i}
+              x={0}
+              y={i * 140}
+              fontFamily="Anton, sans-serif"
+              fontSize={150}
+              letterSpacing={-2}
+              fill={palette.accent}
+            >
+              {ch}
+            </text>
+          ))}
+        </g>
       </g>
     );
   })();
@@ -240,11 +313,24 @@ function PosterSVG({ design }: { design: Design }) {
             />
           );
         }
+        if (m.type === "x") {
+          return (
+            <g key={i} transform={`translate(${m.x}, ${m.y})`} stroke={palette.ink} strokeWidth={3}>
+              <line x1={-m.r / 2} y1={-m.r / 2} x2={m.r / 2} y2={m.r / 2} />
+              <line x1={-m.r / 2} y1={m.r / 2} x2={m.r / 2} y2={-m.r / 2} />
+            </g>
+          );
+        }
+        // bar — short horizontal accent block
         return (
-          <g key={i} transform={`translate(${m.x}, ${m.y})`} stroke={palette.ink} strokeWidth={3}>
-            <line x1={-m.r / 2} y1={-m.r / 2} x2={m.r / 2} y2={m.r / 2} />
-            <line x1={-m.r / 2} y1={m.r / 2} x2={m.r / 2} y2={-m.r / 2} />
-          </g>
+          <rect
+            key={i}
+            x={m.x - m.r}
+            y={m.y - 6}
+            width={m.r * 2}
+            height={12}
+            fill={palette.accent}
+          />
         );
       })}
 
@@ -311,8 +397,8 @@ export function GenerativePoster() {
     <PieceFrame
       number="05"
       title="Generative Poster"
-      caption="A different print every time you reload. Same elements, shuffled rules. Save the ones you like — they probably won't show up the same way twice."
-      hint="shuffle for a new composition · download as SVG"
+      caption="A random typographic poster. Hit shuffle for a new one. Download the ones you like as SVG."
+      hint="shuffle to roll a new layout · save what you like"
       actions={
         <>
           <PieceAction onClick={() => setDesign(generate())} label="Shuffle">

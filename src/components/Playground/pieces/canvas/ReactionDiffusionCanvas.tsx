@@ -133,9 +133,16 @@ export function ReactionDiffusionCanvas({
     const render = () => {
       const [br, bg, bb] = palette.bg;
       const [fr, fg, fb] = palette.fg;
+      // Near-binary threshold: a 1-pixel-wide anti-alias band keeps it from looking
+      // jagged on retina, but every cell is essentially fully bg or fully fg.
+      const lo = 0.225;
+      const hi = 0.245;
+      const span = hi - lo;
       for (let i = 0; i < size; i++) {
         const v = B[i];
-        const t = Math.min(1, Math.max(0, v * 1.6));
+        let t = (v - lo) / span;
+        if (t < 0) t = 0;
+        else if (t > 1) t = 1;
         const r = br + (fr - br) * t;
         const g = bg + (fg - bg) * t;
         const b = bb + (fb - bb) * t;
@@ -203,6 +210,7 @@ export function ReactionDiffusionCanvas({
         ref={canvasRef}
         aria-label={ariaLabel}
         className="w-full h-full block"
+        style={{ imageRendering: "pixelated" }}
       />
     </div>
   );

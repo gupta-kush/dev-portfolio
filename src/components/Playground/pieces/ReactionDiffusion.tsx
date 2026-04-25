@@ -10,8 +10,8 @@ export function ReactionDiffusion() {
     <PieceFrame
       number="01"
       title="Reaction Diffusion"
-      caption="I wanted to see how Gray-Scott behaves when you seed it asymmetrically. The chemicals A and B fight; what looks like growth is just one losing slowly."
-      hint="click anywhere on the surface to seed new growth"
+      caption="Two simulated chemicals on a grid. One eats the other. Click anywhere to drop more of the loud one and watch it spread."
+      hint="click to seed"
       actions={
         <PieceAction onClick={() => setResetKey((k) => k + 1)} label="Reset">
           <RotateCcw size={12} strokeWidth={1.5} />
@@ -25,9 +25,9 @@ export function ReactionDiffusion() {
         style={{ touchAction: "manipulation" }}
       >
         <ReactionDiffusionCanvas
-          gridW={260}
-          gridH={140}
-          steps={6}
+          gridW={400}
+          gridH={220}
+          steps={5}
           interactive
           ariaLabel="Reaction-diffusion simulation. Click to seed new growth."
         />

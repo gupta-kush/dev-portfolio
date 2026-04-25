@@ -4,7 +4,7 @@ import { TypingTrainer } from "./pieces/TypingTrainer";
 import { ParticleField } from "./pieces/ParticleField";
 import { Kaleidoscope } from "./pieces/Kaleidoscope";
 import { GenerativePoster } from "./pieces/GenerativePoster";
-import { AsciiRain } from "./pieces/AsciiRain";
+import { CursorGlider } from "./pieces/CursorGlider";
 
 export function Playground() {
   return (
@@ -21,7 +21,7 @@ export function Playground() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-muted)] mb-4">
-              Six Studies — One Tab
+              Six things, one tab
             </p>
             <h2 className="font-display text-6xl md:text-8xl leading-[0.85] uppercase text-[var(--color-text)]">
               The
@@ -36,9 +36,8 @@ export function Playground() {
             transition={{ duration: 1, delay: 0.2 }}
             className="max-w-md text-[var(--color-muted)] text-lg leading-relaxed"
           >
-            A few small things I made to see what would happen. Some are quiet
-            and on rails. Some want you to touch them. All of them run in your
-            browser, right now.
+            Some small things I made. A few you watch, a few you mess with.
+            They all run in your browser.
           </motion.p>
         </div>
       </div>
@@ -49,7 +48,7 @@ export function Playground() {
         <ParticleField />
         <Kaleidoscope />
         <GenerativePoster />
-        <AsciiRain />
+        <CursorGlider />
       </div>
     </section>
   );

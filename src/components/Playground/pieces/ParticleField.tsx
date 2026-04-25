@@ -10,9 +10,9 @@ export function ParticleField() {
   return (
     <PieceFrame
       number="03"
-      title="Cursor Particle Field"
-      caption="Eight hundred dots wandering through a slow, invisible weather. Drag to push them. Hold still and they keep drifting like they don't know you're there."
-      hint="move your cursor through the field · hold to push harder"
+      title="Particle Field"
+      caption="A flow field with a thousand particles drifting through it. Move your cursor to push them around. Click and hold to push harder."
+      hint="hover to nudge · click and hold to scatter"
       actions={
         <PieceAction onClick={() => setResetKey((k) => k + 1)} label="Reset">
           <RotateCcw size={12} strokeWidth={1.5} />
@@ -38,10 +38,10 @@ function Field() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
     let W = 0;
     let H = 0;
-    const PARTICLE_COUNT = window.matchMedia("(max-width: 768px)").matches ? 400 : 800;
+    const PARTICLE_COUNT = window.matchMedia("(max-width: 768px)").matches ? 600 : 1200;
 
     const xs = new Float32Array(PARTICLE_COUNT);
     const ys = new Float32Array(PARTICLE_COUNT);
@@ -85,46 +85,55 @@ function Field() {
     };
 
     let raf = 0;
-    let t0 = performance.now();
+    const t0 = performance.now();
     const tick = () => {
       if (inView && !reduced) {
         const t = performance.now() - t0;
-        ctx.fillStyle = "rgba(11, 16, 20, 0.10)";
+        // Lower alpha = longer trails. 0.04 keeps them visible without blooming.
+        ctx.fillStyle = "rgba(11, 16, 20, 0.04)";
         ctx.fillRect(0, 0, W, H);
-        ctx.lineWidth = 1;
         for (let i = 0; i < PARTICLE_COUNT; i++) {
           const angle = flowAngle(xs[i], ys[i], t);
-          const fx = Math.cos(angle) * 0.18;
-          const fy = Math.sin(angle) * 0.18;
-          vxs[i] = vxs[i] * 0.94 + fx;
-          vys[i] = vys[i] * 0.94 + fy;
+          const fx = Math.cos(angle) * 0.14;
+          const fy = Math.sin(angle) * 0.14;
+          vxs[i] = vxs[i] * 0.93 + fx;
+          vys[i] = vys[i] * 0.93 + fy;
 
+          // Cursor forces apply only when actually inside the canvas, and only
+          // press when held — hovering nudges gently, holding shoves hard.
           if (mouse.inside) {
             const dx = mouse.x - xs[i];
             const dy = mouse.y - ys[i];
             const d2 = dx * dx + dy * dy;
-            if (d2 < 18000) {
+            if (d2 < 22000) {
               const inv = 1 / Math.sqrt(d2 + 1);
-              const force = mouse.down ? -1.4 : -0.45;
+              const force = mouse.down ? -1.6 : -0.18;
               vxs[i] += dx * inv * force;
               vys[i] += dy * inv * force;
             }
           }
 
+          // Velocity ceiling so wraps don't fling particles past the boundary.
+          const sp = Math.hypot(vxs[i], vys[i]);
+          if (sp > 3.2) {
+            vxs[i] = (vxs[i] / sp) * 3.2;
+            vys[i] = (vys[i] / sp) * 3.2;
+          }
+
           xs[i] += vxs[i];
           ys[i] += vys[i];
 
-          if (xs[i] < -10) xs[i] = W + 10;
-          else if (xs[i] > W + 10) xs[i] = -10;
-          if (ys[i] < -10) ys[i] = H + 10;
-          else if (ys[i] > H + 10) ys[i] = -10;
+          if (xs[i] < -4) xs[i] = W + 4;
+          else if (xs[i] > W + 4) xs[i] = -4;
+          if (ys[i] < -4) ys[i] = H + 4;
+          else if (ys[i] > H + 4) ys[i] = -4;
 
-          const speed = Math.min(1, Math.hypot(vxs[i], vys[i]) * 0.7);
+          const speed = Math.min(1, sp * 0.7);
           const r = 120 + speed * 60;
           const g = 180 + speed * 40;
           const b = 210 + speed * 30;
-          ctx.fillStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${0.45 + speed * 0.4})`;
-          ctx.fillRect(xs[i], ys[i], 1.4, 1.4);
+          ctx.fillStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${0.55 + speed * 0.4})`;
+          ctx.fillRect(xs[i], ys[i], 2.4, 2.4);
         }
       }
       raf = requestAnimationFrame(tick);

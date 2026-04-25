@@ -27,6 +27,7 @@ export function TypingTrainer() {
   const [phrase, setPhrase] = useState<string>(() => pickPhrase(null));
   const [typed, setTyped] = useState("");
   const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [finishedAt, setFinishedAt] = useState<number | null>(null);
   const [now, setNow] = useState(performance.now());
   const [errors, setErrors] = useState(0);
   const [focused, setFocused] = useState(false);
@@ -34,7 +35,7 @@ export function TypingTrainer() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!startedAt) return;
+    if (!startedAt || finishedAt) return;
     let raf = 0;
     const tick = () => {
       setNow(performance.now());
@@ -42,10 +43,18 @@ export function TypingTrainer() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [startedAt]);
+  }, [startedAt, finishedAt]);
 
   const finished = typed.length >= phrase.length;
-  const minutes = startedAt ? (now - startedAt) / 60000 : 0;
+
+  useEffect(() => {
+    if (finished && startedAt && !finishedAt) {
+      setFinishedAt(performance.now());
+    }
+  }, [finished, startedAt, finishedAt]);
+
+  const effectiveNow = finishedAt ?? now;
+  const minutes = startedAt ? (effectiveNow - startedAt) / 60000 : 0;
   const wpm = startedAt && minutes > 0 ? Math.round(typed.length / 5 / minutes) : 0;
   const correctSoFar = useMemo(() => {
     let c = 0;
@@ -60,11 +69,17 @@ export function TypingTrainer() {
     setPhrase(pickPhrase(phrase));
     setTyped("");
     setStartedAt(null);
+    setFinishedAt(null);
     setErrors(0);
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   };
 
   const handleKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      reset();
+      return;
+    }
     if (finished) return;
     if (e.key === "Backspace") {
       e.preventDefault();
@@ -79,14 +94,20 @@ export function TypingTrainer() {
     setTyped((t) => t + next);
   };
 
-  const focusInput = () => inputRef.current?.focus();
+  const focusInput = () => inputRef.current?.focus({ preventScroll: true });
 
   return (
     <PieceFrame
       number="02"
       title="Typing Trainer"
-      caption="A paragraph picks itself when you start. Words-per-minute and accuracy update live. The cursor blinks like it's 1996."
-      hint={focused ? "type to continue · backspace to correct" : "click the page and start typing"}
+      caption="Click in, then type. WPM and accuracy update as you go. Hit reset for a different paragraph."
+      hint={
+        focused
+          ? finished
+            ? "press enter for a new phrase"
+            : "type to continue · backspace to correct · enter to reset"
+          : "click the box to start"
+      }
       actions={
         <PieceAction onClick={reset} label="New Phrase">
           <RotateCcw size={12} strokeWidth={1.5} />
@@ -111,8 +132,7 @@ export function TypingTrainer() {
           autoComplete="off"
           spellCheck={false}
           aria-label="Type the phrase shown"
-          className="absolute opacity-0 pointer-events-none"
-          style={{ left: "-9999px", top: "-9999px" }}
+          className="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none border-0 bg-transparent"
         />
 
         <div className="flex justify-between items-baseline mb-8 font-mono text-[10px] uppercase tracking-[0.25em] text-[#1a1514]/50">

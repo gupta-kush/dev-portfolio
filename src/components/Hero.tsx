@@ -9,7 +9,7 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["-4%", "8%"]);
 
   const firstName = "KUSH".split("");
   const lastName = "GUPTA".split("");
@@ -36,20 +36,24 @@ export function Hero() {
       {/* Reaction-diffusion backdrop with parallax */}
       <motion.div
         style={{ y: backgroundY }}
-        className="absolute right-0 top-0 w-full md:w-[65vw] h-[120%] origin-top"
+        className="absolute inset-x-0 -top-[12%] h-[140%]"
       >
-        <div className="absolute inset-0 opacity-60">
+        <div className="absolute inset-0 opacity-55">
           <ReactionDiffusionCanvas
-            gridW={200}
-            gridH={130}
+            gridW={360}
+            gridH={220}
             steps={3}
             interactive={false}
             autoSeedInterval={2200}
             ariaLabel="Slow reaction-diffusion pattern"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)] via-[var(--color-bg)]/80 to-transparent" />
-        <div className="absolute inset-0 bg-[var(--color-bg)]/30 mix-blend-multiply" />
+        {/* Soften the left third so the name is readable */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)] via-[var(--color-bg)]/55 to-transparent" />
+        {/* Vertical fades at the very top + bottom so parallax can't reveal a hard seam */}
+        <div className="absolute inset-x-0 top-0 h-[18%] bg-gradient-to-b from-[var(--color-bg)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[var(--color-bg)] to-transparent" />
+        <div className="absolute inset-0 bg-[var(--color-bg)]/20 mix-blend-multiply" />
       </motion.div>
 
       <div className="relative z-10">

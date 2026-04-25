@@ -11,8 +11,8 @@ export function Kaleidoscope() {
     <PieceFrame
       number="04"
       title="Kaleidoscope Pad"
-      caption="Draw with your cursor. Six mirrored axes do the rest. There is no undo. Don't worry about it — embarrassment is a fast way to learn what you actually wanted."
-      hint="drag inside the frame · the harder you press, the more you commit"
+      caption="Drag to draw. Whatever you do gets mirrored across six axes. The accent color is random per session."
+      hint="drag inside the frame · clear to start over"
       actions={
         <PieceAction onClick={() => setResetKey((k) => k + 1)} label="Clear">
           <Eraser size={12} strokeWidth={1.5} />
@@ -68,29 +68,37 @@ function Pad() {
     ro.observe(wrap);
 
     let drawing = false;
-    let lastX = 0;
-    let lastY = 0;
+    let prevX = 0, prevY = 0;
+    let prevMidX = 0, prevMidY = 0;
 
-    const drawSegment = (x1: number, y1: number, x2: number, y2: number) => {
+    // Draw a smooth quadratic curve from prevMid → control (prev) → newMid.
+    // Mirrored across SEGMENTS radial axes and reflected along each.
+    const drawSmoothSegment = (
+      sx: number, sy: number, cxp: number, cyp: number, ex: number, ey: number
+    ) => {
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
-      const dx1 = x1 - cx, dy1 = y1 - cy;
-      const dx2 = x2 - cx, dy2 = y2 - cy;
+      const transform = (px: number, py: number, cs: number, sn: number, sign: number) => {
+        const dx = px - cx, dy = py - cy;
+        return {
+          x: dx * cs - dy * sign * sn + cx,
+          y: dx * sn + dy * sign * cs + cy,
+        };
+      };
       for (let s = 0; s < SEGMENTS; s++) {
         const angle = (Math.PI * 2 * s) / SEGMENTS;
         const cs = Math.cos(angle);
         const sn = Math.sin(angle);
         for (let m = 0; m < 2; m++) {
           const sign = m === 0 ? 1 : -1;
-          const rx1 = dx1 * cs - dy1 * sign * sn + cx;
-          const ry1 = dx1 * sn + dy1 * sign * cs + cy;
-          const rx2 = dx2 * cs - dy2 * sign * sn + cx;
-          const ry2 = dx2 * sn + dy2 * sign * cs + cy;
+          const a = transform(sx, sy, cs, sn, sign);
+          const b = transform(cxp, cyp, cs, sn, sign);
+          const c = transform(ex, ey, cs, sn, sign);
           ctx.strokeStyle = m === 0 ? "#1a1514" : accent;
           ctx.lineWidth = m === 0 ? 1.6 : 1.2;
           ctx.beginPath();
-          ctx.moveTo(rx1, ry1);
-          ctx.lineTo(rx2, ry2);
+          ctx.moveTo(a.x, a.y);
+          ctx.quadraticCurveTo(b.x, b.y, c.x, c.y);
           ctx.stroke();
         }
       }
@@ -108,15 +116,21 @@ function Pad() {
     const start = (e: MouseEvent | TouchEvent) => {
       drawing = true;
       const p = getPos(e);
-      lastX = p.x;
-      lastY = p.y;
+      prevX = p.x;
+      prevY = p.y;
+      prevMidX = p.x;
+      prevMidY = p.y;
     };
     const move = (e: MouseEvent | TouchEvent) => {
       if (!drawing) return;
       const p = getPos(e);
-      drawSegment(lastX, lastY, p.x, p.y);
-      lastX = p.x;
-      lastY = p.y;
+      const midX = (prevX + p.x) / 2;
+      const midY = (prevY + p.y) / 2;
+      drawSmoothSegment(prevMidX, prevMidY, prevX, prevY, midX, midY);
+      prevMidX = midX;
+      prevMidY = midY;
+      prevX = p.x;
+      prevY = p.y;
     };
     const end = () => { drawing = false; };
 
