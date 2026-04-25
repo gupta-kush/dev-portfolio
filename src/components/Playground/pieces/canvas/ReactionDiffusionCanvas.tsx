@@ -163,19 +163,18 @@ export function ReactionDiffusionCanvas({
     const stepsPerFrame = reduced ? 0 : steps;
 
     const tick = () => {
-      if (inView && stepsPerFrame > 0) {
-        for (let s = 0; s < stepsPerFrame; s++) step();
-        if (autoSeedInterval > 0 && performance.now() - lastSeed > autoSeedInterval) {
-          const sx = Math.floor(Math.random() * (W - 20)) + 10;
-          const sy = Math.floor(Math.random() * (H - 20)) + 10;
-          seed(sx, sy, 3 + Math.floor(Math.random() * 4));
-          lastSeed = performance.now();
-        }
-        render();
+      if (!inView || stepsPerFrame === 0) return;
+      for (let s = 0; s < stepsPerFrame; s++) step();
+      if (autoSeedInterval > 0 && performance.now() - lastSeed > autoSeedInterval) {
+        const sx = Math.floor(Math.random() * (W - 20)) + 10;
+        const sy = Math.floor(Math.random() * (H - 20)) + 10;
+        seed(sx, sy, 3 + Math.floor(Math.random() * 4));
+        lastSeed = performance.now();
       }
+      render();
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
+    if (inView && stepsPerFrame > 0) raf = requestAnimationFrame(tick);
 
     const handleClick = (e: MouseEvent | TouchEvent) => {
       if (!interactive) return;

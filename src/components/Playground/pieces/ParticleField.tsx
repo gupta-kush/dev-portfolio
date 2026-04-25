@@ -38,10 +38,14 @@ function Field() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    // DPR=1 — particles are pixel rectangles, 2x DPR is 4x pixel cost for no visible gain.
+    const dpr = 1;
     let W = 0;
     let H = 0;
-    const PARTICLE_COUNT = window.matchMedia("(max-width: 768px)").matches ? 600 : 1200;
+    // Scale particle count to canvas area so laptops aren't slammed at large viewports.
+    const initialArea = wrap.getBoundingClientRect().width * wrap.getBoundingClientRect().height;
+    const density = window.matchMedia("(max-width: 768px)").matches ? 0.0008 : 0.0011;
+    const PARTICLE_COUNT = Math.max(300, Math.min(900, Math.round(initialArea * density)));
 
     const xs = new Float32Array(PARTICLE_COUNT);
     const ys = new Float32Array(PARTICLE_COUNT);
@@ -87,58 +91,53 @@ function Field() {
     let raf = 0;
     const t0 = performance.now();
     const tick = () => {
-      if (inView && !reduced) {
-        const t = performance.now() - t0;
-        // Lower alpha = longer trails. 0.04 keeps them visible without blooming.
-        ctx.fillStyle = "rgba(11, 16, 20, 0.04)";
-        ctx.fillRect(0, 0, W, H);
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-          const angle = flowAngle(xs[i], ys[i], t);
-          const fx = Math.cos(angle) * 0.14;
-          const fy = Math.sin(angle) * 0.14;
-          vxs[i] = vxs[i] * 0.93 + fx;
-          vys[i] = vys[i] * 0.93 + fy;
+      if (!inView || reduced) return;
+      const t = performance.now() - t0;
+      ctx.fillStyle = "rgba(11, 16, 20, 0.04)";
+      ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const angle = flowAngle(xs[i], ys[i], t);
+        const fx = Math.cos(angle) * 0.14;
+        const fy = Math.sin(angle) * 0.14;
+        vxs[i] = vxs[i] * 0.93 + fx;
+        vys[i] = vys[i] * 0.93 + fy;
 
-          // Cursor forces apply only when actually inside the canvas, and only
-          // press when held — hovering nudges gently, holding shoves hard.
-          if (mouse.inside) {
-            const dx = mouse.x - xs[i];
-            const dy = mouse.y - ys[i];
-            const d2 = dx * dx + dy * dy;
-            if (d2 < 22000) {
-              const inv = 1 / Math.sqrt(d2 + 1);
-              const force = mouse.down ? -1.6 : -0.18;
-              vxs[i] += dx * inv * force;
-              vys[i] += dy * inv * force;
-            }
+        if (mouse.inside) {
+          const dx = mouse.x - xs[i];
+          const dy = mouse.y - ys[i];
+          const d2 = dx * dx + dy * dy;
+          if (d2 < 22000) {
+            const inv = 1 / Math.sqrt(d2 + 1);
+            const force = mouse.down ? -1.6 : -0.18;
+            vxs[i] += dx * inv * force;
+            vys[i] += dy * inv * force;
           }
-
-          // Velocity ceiling so wraps don't fling particles past the boundary.
-          const sp = Math.hypot(vxs[i], vys[i]);
-          if (sp > 3.2) {
-            vxs[i] = (vxs[i] / sp) * 3.2;
-            vys[i] = (vys[i] / sp) * 3.2;
-          }
-
-          xs[i] += vxs[i];
-          ys[i] += vys[i];
-
-          if (xs[i] < -4) xs[i] = W + 4;
-          else if (xs[i] > W + 4) xs[i] = -4;
-          if (ys[i] < -4) ys[i] = H + 4;
-          else if (ys[i] > H + 4) ys[i] = -4;
-
-          const speed = Math.min(1, sp * 0.7);
-          const r = 120 + speed * 60;
-          const g = 180 + speed * 40;
-          const b = 210 + speed * 30;
-          ctx.fillStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${0.55 + speed * 0.4})`;
-          ctx.fillRect(xs[i], ys[i], 2.4, 2.4);
         }
+
+        const sp = Math.hypot(vxs[i], vys[i]);
+        if (sp > 3.2) {
+          vxs[i] = (vxs[i] / sp) * 3.2;
+          vys[i] = (vys[i] / sp) * 3.2;
+        }
+
+        xs[i] += vxs[i];
+        ys[i] += vys[i];
+
+        if (xs[i] < -4) xs[i] = W + 4;
+        else if (xs[i] > W + 4) xs[i] = -4;
+        if (ys[i] < -4) ys[i] = H + 4;
+        else if (ys[i] > H + 4) ys[i] = -4;
+
+        const speed = Math.min(1, sp * 0.7);
+        const r = 120 + speed * 60;
+        const g = 180 + speed * 40;
+        const b = 210 + speed * 30;
+        ctx.fillStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${0.55 + speed * 0.4})`;
+        ctx.fillRect(xs[i], ys[i], 2.4, 2.4);
       }
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
+    if (inView && !reduced) raf = requestAnimationFrame(tick);
 
     const onMove = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();

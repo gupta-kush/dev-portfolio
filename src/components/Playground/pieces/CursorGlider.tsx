@@ -67,11 +67,12 @@ function Glider() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
     let W = 0;
     let H = 0;
     let logW = 0;
     let gameW = 0;
+    let dirty = true;
 
     const resize = () => {
       const r = wrap.getBoundingClientRect();
@@ -84,6 +85,7 @@ function Glider() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       logW = Math.min(280, Math.max(180, W * 0.3));
       gameW = W - logW;
+      dirty = true;
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -118,6 +120,7 @@ function Glider() {
       runStart = performance.now();
       initBird();
       phase = "play";
+      dirty = true;
     };
 
     const spawn = (now: number) => {
@@ -287,7 +290,12 @@ function Glider() {
       const now = performance.now();
       const active = inViewRef.current && !reducedRef.current;
 
-      if (active && phase === "play") {
+      if (!active) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (phase === "play") {
         // bird physics: spring towards target with damping
         const dy = bird.targetY - bird.y;
         bird.vy = bird.vy * 0.78 + dy * 0.16;
@@ -320,6 +328,7 @@ function Glider() {
               const elapsed = ((now - runStart) / 1000).toFixed(1);
               logEntries.push(`CRASH after ${elapsed}s · ${scoreLocal} commit${scoreLocal === 1 ? "" : "s"}`);
               phase = "crash";
+              dirty = true;
               break;
             }
           }
@@ -328,12 +337,16 @@ function Glider() {
         speed = Math.min(4.5, 2.4 + scoreLocal * 0.045);
       }
 
-      drawBackground();
-      drawWalls();
-      drawBird();
-      drawHud();
-      drawLog();
-      drawOverlay();
+      // In play we draw every frame (bird moves). In idle/crash, only when dirty.
+      if (phase === "play" || dirty) {
+        drawBackground();
+        drawWalls();
+        drawBird();
+        drawHud();
+        drawLog();
+        drawOverlay();
+        dirty = false;
+      }
 
       raf = requestAnimationFrame(tick);
     };

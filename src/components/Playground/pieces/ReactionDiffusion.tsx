@@ -25,9 +25,9 @@ export function ReactionDiffusion() {
         style={{ touchAction: "manipulation" }}
       >
         <ReactionDiffusionCanvas
-          gridW={400}
-          gridH={220}
-          steps={5}
+          gridW={320}
+          gridH={180}
+          steps={3}
           interactive
           ariaLabel="Reaction-diffusion simulation. Click to seed new growth."
         />

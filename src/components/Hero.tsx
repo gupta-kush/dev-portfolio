@@ -40,9 +40,9 @@ export function Hero() {
       >
         <div className="absolute inset-0 opacity-55">
           <ReactionDiffusionCanvas
-            gridW={360}
-            gridH={220}
-            steps={3}
+            gridW={220}
+            gridH={130}
+            steps={2}
             interactive={false}
             autoSeedInterval={2200}
             ariaLabel="Slow reaction-diffusion pattern"
