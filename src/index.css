@@ -1,36 +1,178 @@
-@import url("https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap");
 @import "tailwindcss";
 
-@theme {
-  --font-display: "Anton", sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+:root {
+  --ink: #0e0c0a;
+  --ink-2: #1a1815;
+  --ink-soft: rgba(243, 239, 231, 0.72);
+  --ink-faint: rgba(243, 239, 231, 0.42);
+  --paper: #f3efe7;
+  --paper-2: #e8e2d4;
+  --paper-soft: rgba(14, 12, 10, 0.62);
+  --paper-faint: rgba(14, 12, 10, 0.38);
+  --accent: #ffb86b;
+  --accent-warm: #ff7a45;
+  --highlight: #ffe680;
+  --rule: rgba(255, 255, 255, 0.18);
+  --rule-dark: rgba(14, 12, 10, 0.18);
+  --serif: "Fraunces", "Times New Roman", serif;
+  --sans: "Space Grotesk", "Helvetica Neue", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Courier New", monospace;
 }
 
-@layer base {
-  :root {
-    --color-bg: #1a1514;
-    --color-text: #f2ebe3;
-    --color-accent: #e85d38;
-    --color-muted: #8c7d77;
-    --color-surface: #2d2523;
-  }
-
-  :root.light {
-    --color-bg: #f2ebe3;
-    --color-text: #1a1514;
-    --color-accent: #e85d38;
-    --color-muted: #8c7d77;
-    --color-surface: #e5dcd3;
-  }
-
-  body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    @apply antialiased;
-  }
+html[data-theme="light"] {
+  --ink: #f3efe7;
+  --ink-2: #e8e2d4;
+  --ink-soft: rgba(14, 12, 10, 0.72);
+  --ink-faint: rgba(14, 12, 10, 0.42);
+  --paper: #1a1815;
+  --paper-2: #0e0c0a;
+  --paper-soft: rgba(243, 239, 231, 0.72);
+  --paper-faint: rgba(243, 239, 231, 0.42);
+  --rule: rgba(14, 12, 10, 0.18);
+  --rule-dark: rgba(255, 255, 255, 0.18);
 }
 
-html {
-  scroll-behavior: smooth;
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 768px) {
+  section { padding-left: 20px !important; padding-right: 20px !important; }
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+body { overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+
+/* image placeholder */
+.imgph { position: relative; background: #1a1815; overflow: hidden; }
+.imgph::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 184, 107, 0.25), transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(64, 40, 30, 0.6), transparent 70%),
+    linear-gradient(180deg, #2a221a, #0e0c0a);
+}
+.imgph::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9'/%3E%3CfeColorMatrix values='0 0 0 0 1, 0 0 0 0 0.95, 0 0 0 0 0.9, 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+}
+.imgph > img {
+  position: relative; z-index: 1;
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.imgph > .label {
+  position: absolute; z-index: 2; top: 12px; left: 12px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 7px;
+  backdrop-filter: blur(4px);
+}
+.imgph > .meta {
+  position: absolute; z-index: 2; bottom: 12px; right: 12px;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.78;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  border: 1.5px solid currentColor;
+  background: transparent;
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.18em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.btn:hover { background: currentColor; }
+.btn:hover > * { color: var(--ink); mix-blend-mode: difference; }
+
+.alink {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: gap 0.2s;
+}
+.alink:hover { gap: 12px; }
+
+@keyframes scroll-arrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+.scroll-hint { animation: scroll-arrow 2s ease-in-out infinite; }
+
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pulse { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+.kchar { display: inline-block; }
+
+@keyframes mosaic-marq {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+::selection { background: var(--accent); color: var(--ink); }
+
+.label-mono {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  opacity: 0.55;
+}
+.loader-frame { position: absolute; inset: 0; z-index: 9999; pointer-events: none; }
+.meter-bar {
+  position: relative; height: 2px;
+  background: rgba(243, 239, 231, 0.12);
+  overflow: hidden;
+}
+.meter-bar > span {
+  display: block; height: 100%;
+  background: var(--accent);
+  transition: width 0.04s linear;
+}
+
+.gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--ink);
+  pointer-events: auto;
+}
+.gate.gate-done {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.1s;
+}
+
+@keyframes shutter {
+  0%   { opacity: 0; }
+  18%  { opacity: 1; }
+  100% { opacity: 0; }
 }
