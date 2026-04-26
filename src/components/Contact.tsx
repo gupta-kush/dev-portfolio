@@ -14,7 +14,7 @@ export function Contact() {
       style={{
         background: "#0a0908",
         color: "var(--paper)",
-        padding: "80px 36px 60px",
+        padding: "80px clamp(20px, 3vw, 36px) 60px",
         position: "relative",
       }}
     >

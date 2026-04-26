@@ -72,15 +72,15 @@ export function ContactCard() {
     >
       <div
         style={{
-          padding: "36px 40px",
+          padding: "clamp(24px, 4vw, 36px) clamp(20px, 4vw, 40px)",
           display: "grid",
           gridTemplateColumns: "auto 1fr",
-          gap: "0 28px",
+          gap: "0 clamp(16px, 3vw, 28px)",
           alignItems: "center",
           minHeight: 200,
         }}
       >
-        <div style={{ width: 72, height: 72 }}>
+        <div style={{ width: "clamp(56px, 9vw, 72px)", height: "clamp(56px, 9vw, 72px)" }}>
           <Mark bg="#1a1815" ink="var(--paper)" />
         </div>
 
@@ -88,7 +88,7 @@ export function ContactCard() {
           <div
             style={{
               fontFamily: "var(--serif)",
-              fontSize: 30,
+              fontSize: "clamp(22px, 4vw, 30px)",
               lineHeight: 1,
               letterSpacing: "-0.02em",
               fontStyle: "italic",
@@ -182,7 +182,7 @@ export function ContactCard() {
           borderTop: open ? "1px solid rgba(243,239,231,0.14)" : "none",
         }}
       >
-        <form onSubmit={submit} style={{ padding: "28px 40px 32px" }}>
+        <form onSubmit={submit} style={{ padding: "clamp(20px, 4vw, 28px) clamp(20px, 4vw, 40px) clamp(24px, 4vw, 32px)" }}>
           <div
             style={{
               display: "flex",

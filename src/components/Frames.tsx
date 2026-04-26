@@ -10,6 +10,7 @@ import { useState } from "react";
 import { GALLERY_PHOTOS, type GalleryPhoto } from "../photos";
 import { Reveal } from "./Reveal";
 import { Atmosphere } from "./Atmosphere";
+import { useIsMobile } from "../hooks/useMediaQuery";
 
 type Row = {
   height: number;
@@ -21,29 +22,62 @@ type Row = {
 // way, middle scrolls the other way at a different speed — produces the
 // parallax that breaks the "rows scrolling" feel. Heights tuned to fit
 // inside a 1080p viewport once the section header + footer are added.
-const ROWS: Row[] = [
+const ROWS_DESKTOP: Row[] = [
   { height: 200, duration: "85s", direction: "rtl" },
   { height: 150, duration: "70s", direction: "ltr" },
   { height: 200, duration: "95s", direction: "rtl" },
 ];
 
+// Tighter rows on mobile so the gallery fits inside a typical phone
+// viewport without dominating the page.
+const ROWS_MOBILE: Row[] = [
+  { height: 130, duration: "60s", direction: "rtl" },
+  { height: 100, duration: "50s", direction: "ltr" },
+  { height: 130, duration: "70s", direction: "rtl" },
+];
+
 const ROW_GAP = 8;
 const PHOTO_GAP = 6;
-const BAND_H = ROWS.reduce((s, r) => s + r.height, 0) + (ROWS.length - 1) * ROW_GAP;
-
-// Distribute photos across rows in an interleaving pattern that mixes
-// landscape and portrait orientations per row when possible. Falls back
-// to round-robin when filtering produces tiny sets.
-function distributeRows(list: GalleryPhoto[]): GalleryPhoto[][] {
-  const rows: GalleryPhoto[][] = ROWS.map(() => []);
-  list.forEach((p, i) => {
-    rows[i % ROWS.length].push(p);
-  });
-  return rows;
-}
 
 // Width a photo would occupy in a given row given its native aspect.
 const photoWidth = (p: GalleryPhoto, rowH: number) => Math.round(p.aspect * rowH);
+
+// Distribute photos across rows. Portraits and landscapes are interleaved
+// so each row gets a mix of orientations rather than a clump of all-tall
+// or all-wide. Each row's content is then repeated until it's wide enough
+// for the marquee to feel populated even with a small photo set.
+function distributeRows(list: GalleryPhoto[], rows: Row[]): GalleryPhoto[][] {
+  if (list.length === 0) return rows.map(() => []);
+  // Interleave portraits and landscapes
+  const portraits = list.filter((p) => p.aspect < 0.95);
+  const landscapes = list.filter((p) => p.aspect >= 0.95);
+  const interleaved: GalleryPhoto[] = [];
+  let pi = 0;
+  let li = 0;
+  while (pi < portraits.length || li < landscapes.length) {
+    if (li < landscapes.length) interleaved.push(landscapes[li++]);
+    if (pi < portraits.length) interleaved.push(portraits[pi++]);
+  }
+  const buckets: GalleryPhoto[][] = rows.map(() => []);
+  interleaved.forEach((p, i) => {
+    buckets[i % rows.length].push(p);
+  });
+  // Repeat each bucket so its content is wide enough that the marquee
+  // duplication doesn't show obvious gaps with sparse photo sets.
+  const TARGET_ROW_W = 2600;
+  return buckets.map((bucket, ri) => {
+    if (bucket.length === 0) return bucket;
+    const rowH = rows[ri].height;
+    const oneCycleW = bucket.reduce(
+      (s, p) => s + photoWidth(p, rowH) + PHOTO_GAP,
+      0,
+    );
+    const reps = Math.max(2, Math.ceil(TARGET_ROW_W / Math.max(oneCycleW, 1)));
+    const out: GalleryPhoto[] = [];
+    for (let r = 0; r < reps; r++) out.push(...bucket);
+    return out;
+  });
+}
 
 export function Frames({
   onOpen,
@@ -51,6 +85,9 @@ export function Frames({
   onOpen: (idx: number, list: GalleryPhoto[]) => void;
 }) {
   const [filter, setFilter] = useState<string>("all");
+  const isMobile = useIsMobile();
+  const ROWS = isMobile ? ROWS_MOBILE : ROWS_DESKTOP;
+  const BAND_H = ROWS.reduce((s, r) => s + r.height, 0) + (ROWS.length - 1) * ROW_GAP;
 
   const filtered =
     filter === "all"
@@ -59,7 +96,7 @@ export function Frames({
 
   const cameras = Array.from(new Set(GALLERY_PHOTOS.map((p) => p.exif.camera)));
 
-  const rowPhotos = distributeRows(filtered);
+  const rowPhotos = distributeRows(filtered, ROWS);
 
   return (
     <section

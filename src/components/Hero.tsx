@@ -72,9 +72,9 @@ function KineticName() {
       onMouseLeave={() => setHover(false)}
       style={{
         position: "absolute",
-        left: 32,
-        right: 32,
-        top: "47%",
+        left: "clamp(16px, 3vw, 32px)",
+        right: "clamp(16px, 3vw, 32px)",
+        top: "44%",
         transform: "translateY(-50%)",
         lineHeight: 0.84,
         fontFamily: "var(--serif)",
@@ -85,12 +85,12 @@ function KineticName() {
         userSelect: "none",
       }}
     >
-      <div style={{ fontSize: "clamp(96px, 13.5vw, 200px)", letterSpacing: "-0.045em" }}>
+      <div style={{ fontSize: "clamp(64px, 13.5vw, 200px)", letterSpacing: "-0.045em" }}>
         {drift(wrap("Kush"), true)}
       </div>
       <div
         style={{
-          fontSize: "clamp(96px, 13.5vw, 200px)",
+          fontSize: "clamp(64px, 13.5vw, 200px)",
           letterSpacing: "-0.045em",
           paddingLeft: "11vw",
           marginTop: "-0.12em",
@@ -104,7 +104,7 @@ function KineticName() {
             height: 2,
             background: "#fff",
             verticalAlign: "middle",
-            marginLeft: 24,
+            marginLeft: "clamp(10px, 2vw, 24px)",
             opacity: 0.7,
           }}
         />
@@ -131,14 +131,16 @@ function ExposureStrip({ meta }: { meta: string }) {
     <div
       style={{
         position: "absolute",
-        left: 32,
-        bottom: 168,
+        left: "clamp(16px, 3vw, 32px)",
+        right: "clamp(16px, 3vw, 32px)",
+        bottom: "clamp(140px, 20vh, 180px)",
         zIndex: 10,
         display: "flex",
         alignItems: "center",
-        gap: 22,
+        gap: "clamp(10px, 2vw, 22px)",
+        flexWrap: "wrap",
         fontFamily: "var(--mono)",
-        fontSize: 11,
+        fontSize: "clamp(9px, 1.2vw, 11px)",
         letterSpacing: "0.2em",
         color: "rgba(255,255,255,.78)",
       }}
@@ -156,13 +158,13 @@ function HeroPeekSlabs() {
     <div
       style={{
         position: "absolute",
-        left: 32,
-        right: 32,
-        bottom: 36,
+        left: "clamp(16px, 3vw, 32px)",
+        right: "clamp(16px, 3vw, 32px)",
+        bottom: 24,
         zIndex: 10,
         display: "grid",
-        gridTemplateColumns: `repeat(${PROJECTS_BRIEF.length}, 1fr)`,
-        gap: 12,
+        gridTemplateColumns: `repeat(auto-fit, minmax(min(220px, 100%), 1fr))`,
+        gap: 10,
         fontFamily: "var(--mono)",
       }}
     >
@@ -271,7 +273,7 @@ export function Hero() {
       <div
         style={{
           position: "absolute",
-          right: 32,
+          right: "clamp(16px, 3vw, 32px)",
           top: 96,
           display: "flex",
           flexDirection: "column",
@@ -309,10 +311,10 @@ export function Hero() {
       </div>
 
       <div
-        className="scroll-hint"
+        className="scroll-hint hide-on-mobile"
         style={{
           position: "absolute",
-          right: 32,
+          right: "clamp(16px, 3vw, 32px)",
           bottom: 168,
           zIndex: 10,
           fontFamily: "var(--mono)",

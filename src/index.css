@@ -43,6 +43,10 @@ html { scroll-behavior: smooth; }
   section { padding-left: 20px !important; padding-right: 20px !important; }
 }
 
+@media (max-width: 640px) {
+  .hide-on-mobile { display: none !important; }
+}
+
 * { box-sizing: border-box; }
 html, body {
   margin: 0;

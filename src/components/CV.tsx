@@ -3,8 +3,11 @@
 import { CV_ROWS } from "../content";
 import { Reveal } from "./Reveal";
 import { Atmosphere } from "./Atmosphere";
+import { useIsMobile, useIsTablet } from "../hooks/useMediaQuery";
 
 export function CV() {
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   return (
     <section
       id="resume"
@@ -36,7 +39,13 @@ export function CV() {
         </div>
       </Reveal>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 64 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isTablet ? "1fr" : "1fr 1.4fr",
+          gap: isTablet ? 36 : 64,
+        }}
+      >
         <Reveal delay={80}>
           <div
             style={{
@@ -68,14 +77,19 @@ export function CV() {
             </a>
           </div>
         </Reveal>
-        <div style={{ borderLeft: "1.5px solid var(--ink)", paddingLeft: 32 }}>
+        <div
+          style={{
+            borderLeft: isTablet ? "none" : "1.5px solid var(--ink)",
+            paddingLeft: isTablet ? 0 : 32,
+          }}
+        >
           {CV_ROWS.map((e, i) => (
             <Reveal key={i} delay={120 + i * 80}>
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "160px 1fr",
-                  gap: 24,
+                  gridTemplateColumns: isMobile ? "1fr" : "160px 1fr",
+                  gap: isMobile ? 8 : 24,
                   padding: "22px 0",
                   borderBottom: "1px dashed var(--rule-dark)",
                 }}

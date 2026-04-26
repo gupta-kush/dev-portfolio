@@ -9,6 +9,7 @@ import { CV } from "./components/CV";
 import { Contact } from "./components/Contact";
 import { CasePage } from "./components/Case";
 import { useRoute } from "./hooks/useRoute";
+import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import type { GalleryPhoto } from "./photos";
 
 function Home({ onLightboxOpen }: { onLightboxOpen: (idx: number, list: GalleryPhoto[]) => void }) {
@@ -25,6 +26,7 @@ function Home({ onLightboxOpen }: { onLightboxOpen: (idx: number, list: GalleryP
 
 export default function App() {
   const route = useRoute();
+  useSmoothScroll();
   const [lb, setLb] = useState<{ idx: number | null; photos: GalleryPhoto[] }>({
     idx: null,
     photos: [],

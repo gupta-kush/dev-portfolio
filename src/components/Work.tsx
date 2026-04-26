@@ -5,9 +5,12 @@ import { useState } from "react";
 import { PROJECTS } from "../content";
 import { Reveal } from "./Reveal";
 import { Atmosphere } from "./Atmosphere";
+import { useIsMobile, useIsTablet } from "../hooks/useMediaQuery";
 
 export function Work() {
   const [hover, setHover] = useState<number | null>(null);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   return (
     <section
       id="projects"
@@ -43,9 +46,9 @@ export function Work() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1.1fr 1fr",
-            gap: 48,
-            marginBottom: 56,
+            gridTemplateColumns: isTablet ? "1fr" : "1.1fr 1fr",
+            gap: isMobile ? 24 : 48,
+            marginBottom: isMobile ? 36 : 56,
           }}
         >
           <div
@@ -94,16 +97,20 @@ export function Work() {
           onMouseLeave={() => setHover(null)}
           style={{
             display: "grid",
-            gridTemplateColumns: "60px 1fr 200px 140px",
-            gap: 24,
-            padding: "28px 0",
-            alignItems: "center",
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : isTablet
+                ? "40px 1fr 140px"
+                : "60px 1fr 200px 140px",
+            gap: isMobile ? 12 : 24,
+            padding: isMobile ? "20px 0" : "28px 0",
+            alignItems: isMobile ? "start" : "center",
             borderTop: "1px solid var(--rule-dark)",
             color: "var(--ink)",
             cursor: "pointer",
             transition: "padding-left .35s, background .35s",
-            paddingLeft: hover === i ? 18 : 0,
-            background: hover === i ? "rgba(255,184,107,0.08)" : "transparent",
+            paddingLeft: hover === i && !isMobile ? 18 : 0,
+            background: hover === i && !isMobile ? "rgba(255,184,107,0.08)" : "transparent",
             ...(i === PROJECTS.length - 1 ? { borderBottom: "1px solid var(--rule-dark)" } : {}),
           }}
         >
@@ -147,32 +154,34 @@ export function Work() {
               ))}
             </div>
           </div>
-          <div
-            style={{
-              fontFamily: "var(--mono)",
-              fontSize: 11,
-              letterSpacing: "0.16em",
-              color: "var(--paper-soft)",
-              display: "flex",
-              flexDirection: "column",
-              gap: 5,
-            }}
-          >
-            <span>{p.lang}</span>
-            <span>{p.stars}</span>
-            <span style={{ color: "var(--accent-warm)" }}>{p.status}</span>
-            <span style={{ opacity: 0.55 }}>UPD · {p.updated}</span>
-          </div>
+          {!isTablet && (
+            <div
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                letterSpacing: "0.16em",
+                color: "var(--paper-soft)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 5,
+              }}
+            >
+              <span>{p.lang}</span>
+              <span>{p.stars}</span>
+              <span style={{ color: "var(--accent-warm)" }}>{p.status}</span>
+              <span style={{ opacity: 0.55 }}>UPD · {p.updated}</span>
+            </div>
+          )}
           <div
             style={{
               fontFamily: "var(--mono)",
               fontSize: 11,
               letterSpacing: "0.18em",
-              textAlign: "right",
+              textAlign: isMobile ? "left" : "right",
               display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              alignItems: "flex-end",
+              flexDirection: isMobile ? "row" : "column",
+              gap: isMobile ? 18 : 8,
+              alignItems: isMobile ? "center" : "flex-end",
             }}
           >
             <span
