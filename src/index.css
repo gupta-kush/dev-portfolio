@@ -9,7 +9,6 @@
 
 @layer base {
   :root {
-    /* Warm Espresso / Terracotta Palette (Dark) */
     --color-bg: #1a1514;
     --color-text: #f2ebe3;
     --color-accent: #e85d38;
@@ -18,7 +17,6 @@
   }
 
   :root.light {
-    /* Warm Sand / Terracotta Palette (Light) */
     --color-bg: #f2ebe3;
     --color-text: #1a1514;
     --color-accent: #e85d38;
@@ -29,11 +27,7 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
-    @apply antialiased selection:bg-[var(--color-accent)] selection:text-white transition-colors duration-500 cursor-none;
-  }
-
-  a, button, [role="button"] {
-    @apply cursor-none;
+    @apply antialiased;
   }
 }
 
