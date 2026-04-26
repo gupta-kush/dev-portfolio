@@ -11,6 +11,47 @@ const DEST = resolve("src/assets/photos");
 
 if (!existsSync(DEST)) mkdirSync(DEST, { recursive: true });
 
+// PNG dimensions: signature is 8 bytes, then 4-byte chunk length, "IHDR",
+// then 13 bytes of header data with width/height as big-endian uint32 at
+// offsets 16 and 20 from start of file.
+function pngSize(buf) {
+  if (
+    buf[0] !== 0x89 ||
+    buf[1] !== 0x50 ||
+    buf[2] !== 0x4e ||
+    buf[3] !== 0x47 ||
+    buf[4] !== 0x0d ||
+    buf[5] !== 0x0a ||
+    buf[6] !== 0x1a ||
+    buf[7] !== 0x0a
+  )
+    return null;
+  return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+}
+
+// WebP dimensions live in either VP8 / VP8L / VP8X chunks at offset 12.
+function webpSize(buf) {
+  if (buf.toString("ascii", 0, 4) !== "RIFF" || buf.toString("ascii", 8, 12) !== "WEBP") return null;
+  const chunk = buf.toString("ascii", 12, 16);
+  if (chunk === "VP8 ") {
+    // simple: 14 bytes in, 16-bit width and height
+    const w = buf.readUInt16LE(26) & 0x3fff;
+    const h = buf.readUInt16LE(28) & 0x3fff;
+    return { w, h };
+  }
+  if (chunk === "VP8L") {
+    const b = buf.readUInt32LE(21);
+    return { w: (b & 0x3fff) + 1, h: ((b >> 14) & 0x3fff) + 1 };
+  }
+  if (chunk === "VP8X") {
+    // 24 bytes in, then 3-byte width-1 and 3-byte height-1
+    const w = (buf.readUIntLE(24, 3)) + 1;
+    const h = (buf.readUIntLE(27, 3)) + 1;
+    return { w, h };
+  }
+  return null;
+}
+
 function jpegSize(buf) {
   // SOI marker
   if (buf[0] !== 0xff || buf[1] !== 0xd8) return null;
@@ -87,28 +128,46 @@ function exifOrientation(buf) {
   return 1;
 }
 
-const files = readdirSync(SRC).filter((f) => /\.(jpe?g|JPE?G)$/.test(f));
+const SUPPORTED = /\.(jpe?g|png|webp)$/i;
+// Formats we explicitly call out as not importable through this script.
+const NEEDS_PRECONVERT = /\.(heic|heif)$/i;
+const RAW = /\.(raf|nef|cr2|cr3|arw|dng|orf|rw2|pef)$/i;
+
+const files = readdirSync(SRC).filter((f) => {
+  if (NEEDS_PRECONVERT.test(f)) {
+    console.warn(`! ${f}: HEIC/HEIF — convert to JPEG first (Photos app or 'heif-convert').`);
+    return false;
+  }
+  if (RAW.test(f)) {
+    console.warn(`! ${f}: RAW files aren't web-deliverable. Develop in your editor and export to JPEG.`);
+    return false;
+  }
+  return SUPPORTED.test(f);
+});
 files.sort();
 
 const records = [];
 for (const f of files) {
   const fullPath = join(SRC, f);
   const buf = readFileSync(fullPath);
-  const dim = jpegSize(buf);
+  const ext = extname(f).toLowerCase();
+  let dim = null;
+  if (/^\.jpe?g$/.test(ext)) dim = jpegSize(buf);
+  else if (ext === ".png") dim = pngSize(buf);
+  else if (ext === ".webp") dim = webpSize(buf);
   if (!dim) {
     console.error("Could not parse", f);
     continue;
   }
-  const orient = exifOrientation(buf);
-  // Orientation 5-8 means the photo is rotated 90/270 from its raw pixels.
+  // EXIF orientation only meaningful for JPEG.
+  const orient = /^\.jpe?g$/.test(ext) ? exifOrientation(buf) : 1;
   const swap = orient >= 5 && orient <= 8;
   const w = swap ? dim.h : dim.w;
   const h = swap ? dim.w : dim.h;
-  const ext = extname(f).toLowerCase();
   const slug = basename(f, extname(f)).toLowerCase();
   const destName = `${slug}${ext}`;
   copyFileSync(fullPath, join(DEST, destName));
-  records.push({ src: `/photos/${destName}`, w, h, slug });
+  records.push({ src: `./assets/photos/${destName}`, w, h, slug, ext: ext.slice(1) });
   console.log(`${f}  ${dim.w}x${dim.h} (orient=${orient}${swap ? ", swap" : ""}) → ${w}x${h}`);
 }
 
