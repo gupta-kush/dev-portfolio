@@ -1,6 +1,9 @@
-// Photo gallery as a continuous mosaic marquee. 3-row band; portraits can
-// span 2-3 rows. Layout is deterministic per photo (seeded from src) so it
-// stays stable across renders. Hover anywhere pauses the loop.
+// Photo gallery as a continuous mosaic marquee. Column-based shelf packer:
+// each column picks one of four slot patterns (1 tall · 3 stacked · 2+1 ·
+// 1+2) and a column width within a pattern-specific range. Photos use
+// object-fit: cover so each tile fills its slot exactly. By construction
+// there is no whitespace between tiles within a column, and columns sit
+// flush against each other with only a uniform gap.
 
 import { useState } from "react";
 import { GALLERY_PHOTOS, type GalleryPhoto } from "../photos";
@@ -19,29 +22,57 @@ const seed = (str: string) => {
 
 type Tile = { p: GalleryPhoto; x: number; y: number; w: number; h: number };
 
+// Slot positions are in row-units. A pattern's slot count matches how many
+// photos that column consumes. Each pattern declares its preferred width
+// range so portrait-heavy columns stay narrower and stacked-short columns
+// can stretch wider.
+type Slot = { y: number; h: number };
+type Pattern = { slots: Slot[]; minW: number; maxW: number };
+
+const PATTERNS: Pattern[] = [
+  { slots: [{ y: 0, h: 3 }], minW: 280, maxW: 380 }, // 1 tall portrait
+  { slots: [{ y: 0, h: 1 }, { y: 1, h: 1 }, { y: 2, h: 1 }], minW: 320, maxW: 460 }, // 3 stacked
+  { slots: [{ y: 0, h: 2 }, { y: 2, h: 1 }], minW: 320, maxW: 420 }, // 2 then 1
+  { slots: [{ y: 0, h: 1 }, { y: 1, h: 2 }], minW: 320, maxW: 420 }, // 1 then 2
+];
+
 function buildPlacements(list: GalleryPhoto[]): { tiles: Tile[]; totalW: number } {
-  const cursor = [0, 0, 0];
-  const out: Tile[] = [];
-  list.forEach((p) => {
-    const s = seed(p.src);
-    const r = s % 100;
-    const span = r < 55 ? 1 : r < 88 ? 2 : 3;
-    const widthOpts =
-      span === 1 ? [240, 300, 360, 440] : span === 2 ? [220, 260, 320] : [200, 240, 280];
-    const w = widthOpts[(s >> 3) % widthOpts.length];
+  const tiles: Tile[] = [];
+  let cursorX = 0;
+  let i = 0;
+  let colIdx = 0;
+  let lastPatIdx = -1;
+  while (i < list.length) {
+    const remaining = list.length - i;
+    // pool of patterns whose slot count fits in remaining photos
+    const valid = PATTERNS.map((p, idx) => ({ p, idx })).filter(
+      ({ p }) => p.slots.length <= remaining,
+    );
+    // pick deterministically from photo seed + column index, avoid repeats
+    const s = seed(list[i].src + ":" + colIdx);
+    let choiceIdx = s % valid.length;
+    if (valid.length > 1 && valid[choiceIdx].idx === lastPatIdx) {
+      choiceIdx = (choiceIdx + 1) % valid.length;
+    }
+    const choice = valid[choiceIdx];
+    const pat = choice.p;
+    lastPatIdx = choice.idx;
 
-    let bestRow = 0;
-    for (let i = 1; i <= ROWS - span; i++) if (cursor[i] < cursor[bestRow]) bestRow = i;
-
-    let x = 0;
-    for (let i = bestRow; i < bestRow + span; i++) x = Math.max(x, cursor[i]);
-    const y = bestRow * (ROW_H + GAP);
-    const h = span * ROW_H + (span - 1) * GAP;
-    out.push({ p, x, y, w, h });
-    for (let i = bestRow; i < bestRow + span; i++) cursor[i] = x + w + GAP;
-  });
-  const totalW = Math.max(...cursor);
-  return { tiles: out, totalW };
+    const colW = pat.minW + ((s >> 5) % (pat.maxW - pat.minW + 1));
+    pat.slots.forEach((slot, k) => {
+      tiles.push({
+        p: list[i + k],
+        x: cursorX,
+        y: slot.y * (ROW_H + GAP),
+        w: colW,
+        h: slot.h * ROW_H + (slot.h - 1) * GAP,
+      });
+    });
+    cursorX += colW + GAP;
+    i += pat.slots.length;
+    colIdx++;
+  }
+  return { tiles, totalW: cursorX };
 }
 
 export function Frames({
