@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { PROJECTS } from "../content";
 import { Reveal } from "./Reveal";
+import { Atmosphere } from "./Atmosphere";
 
 export function Work() {
   const [hover, setHover] = useState<number | null>(null);
@@ -14,10 +15,11 @@ export function Work() {
       style={{
         background: "var(--paper)",
         color: "var(--ink)",
-        padding: "120px 36px 100px",
+        padding: "100px 36px 100px",
         position: "relative",
       }}
     >
+      <Atmosphere kind="leak" />
       <Reveal>
         <div
           style={{

@@ -3,6 +3,7 @@
 
 import { ContactCard } from "./ContactCard";
 import { Reveal } from "./Reveal";
+import { Atmosphere } from "./Atmosphere";
 import { PROFILE } from "../content";
 
 export function Contact() {
@@ -10,8 +11,14 @@ export function Contact() {
     <section
       id="contact"
       data-screen-label="04 Contact"
-      style={{ background: "#0a0908", color: "var(--paper)", padding: "140px 36px 60px" }}
+      style={{
+        background: "#0a0908",
+        color: "var(--paper)",
+        padding: "80px 36px 60px",
+        position: "relative",
+      }}
     >
+      <Atmosphere kind="displace" />
       <Reveal>
         <div
           style={{

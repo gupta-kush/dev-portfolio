@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { GALLERY_PHOTOS, type GalleryPhoto } from "../photos";
 import { Reveal } from "./Reveal";
+import { Atmosphere } from "./Atmosphere";
 
 type Row = {
   height: number;
@@ -18,11 +19,12 @@ type Row = {
 
 // Three rows, varied heights for visual rhythm. Top + bottom scroll one
 // way, middle scrolls the other way at a different speed — produces the
-// parallax that breaks the "rows scrolling" feel.
+// parallax that breaks the "rows scrolling" feel. Heights tuned to fit
+// inside a 1080p viewport once the section header + footer are added.
 const ROWS: Row[] = [
-  { height: 300, duration: "85s", direction: "rtl" },
-  { height: 220, duration: "70s", direction: "ltr" },
-  { height: 300, duration: "95s", direction: "rtl" },
+  { height: 200, duration: "85s", direction: "rtl" },
+  { height: 150, duration: "70s", direction: "ltr" },
+  { height: 200, duration: "95s", direction: "rtl" },
 ];
 
 const ROW_GAP = 8;
@@ -66,12 +68,13 @@ export function Frames({
       style={{
         background: "#0a0908",
         color: "var(--paper)",
-        padding: "120px 0 100px",
+        padding: "80px 0 80px",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      <div style={{ padding: "0 clamp(20px, 3vw, 36px)" }}>
+      <Atmosphere kind="grain" />
+      <div style={{ padding: "0 clamp(20px, 3vw, 36px)", position: "relative", zIndex: 1 }}>
         <Reveal>
           <div
             style={{
@@ -83,7 +86,7 @@ export function Frames({
               color: "var(--ink-faint)",
               borderTop: "1.5px solid var(--rule)",
               paddingTop: 14,
-              marginBottom: 60,
+              marginBottom: 36,
             }}
           >
             <span>§ 02 / PICS / LIGHT</span>
@@ -96,7 +99,7 @@ export function Frames({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-end",
-            marginBottom: 36,
+            marginBottom: 24,
             flexWrap: "wrap",
             gap: 18,
           }}
@@ -147,6 +150,7 @@ export function Frames({
           width: "100%",
           height: BAND_H,
           overflow: "hidden",
+          zIndex: 1,
         }}
       >
         {ROWS.map((row, rIdx) => {
@@ -254,13 +258,15 @@ export function Frames({
 
       <div
         style={{
-          padding: "32px clamp(20px, 3vw, 36px) 0",
+          padding: "24px clamp(20px, 3vw, 36px) 0",
           display: "flex",
           justifyContent: "space-between",
           fontFamily: "var(--mono)",
           fontSize: 11,
           letterSpacing: "0.18em",
           color: "var(--ink-soft)",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         <span>{filtered.length} FRAMES · LOOPING</span>

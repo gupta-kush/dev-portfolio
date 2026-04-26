@@ -2,14 +2,21 @@
 
 import { CV_ROWS } from "../content";
 import { Reveal } from "./Reveal";
+import { Atmosphere } from "./Atmosphere";
 
 export function CV() {
   return (
     <section
       id="resume"
       data-screen-label="03 Resume"
-      style={{ background: "var(--paper)", color: "var(--ink)", padding: "120px 36px 100px" }}
+      style={{
+        background: "var(--paper)",
+        color: "var(--ink)",
+        padding: "100px 36px 100px",
+        position: "relative",
+      }}
     >
+      <Atmosphere kind="chroma" />
       <Reveal>
         <div
           style={{
