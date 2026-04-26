@@ -2,7 +2,6 @@ import { useState } from "react";
 import { LoaderGate } from "./components/Loader";
 import { TopNav } from "./components/TopNav";
 import { Hero } from "./components/Hero";
-import { Distortion } from "./components/Distortion";
 import { Work } from "./components/Work";
 import { Frames } from "./components/Frames";
 import { Lightbox } from "./components/Lightbox";
@@ -16,11 +15,8 @@ function Home({ onLightboxOpen }: { onLightboxOpen: (idx: number, list: GalleryP
   return (
     <>
       <Hero />
-      <Distortion kind="displace" desc="Displacement — code becomes light." />
       <Work />
-      <Distortion kind="leak" desc="Light leaks across the gate." />
       <Frames onOpen={onLightboxOpen} />
-      <Distortion kind="grain" desc="Grain bloom." />
       <CV />
       <Contact />
     </>

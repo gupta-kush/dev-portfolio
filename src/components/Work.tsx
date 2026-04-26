@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { PROJECTS } from "../content";
+import { Reveal } from "./Reveal";
 
 export function Work() {
   const [hover, setHover] = useState<number | null>(null);
@@ -17,57 +18,61 @@ export function Work() {
         position: "relative",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontFamily: "var(--mono)",
-          fontSize: 11,
-          letterSpacing: "0.22em",
-          color: "var(--paper-soft)",
-          borderTop: "1.5px solid var(--ink)",
-          paddingTop: 14,
-          marginBottom: 60,
-        }}
-      >
-        <span>§ 01 — PROJECTS / SELECTED</span>
-        <span>SHIPPED, ON GITHUB</span>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.1fr 1fr",
-          gap: 48,
-          marginBottom: 56,
-        }}
-      >
+      <Reveal>
         <div
           style={{
-            fontFamily: "var(--serif)",
-            fontSize: "clamp(48px, 6vw, 88px)",
-            fontStyle: "italic",
-            lineHeight: 0.96,
-            letterSpacing: "-0.02em",
-            fontWeight: 400,
-          }}
-        >
-          recent projects.
-        </div>
-        <div
-          style={{
-            alignSelf: "end",
-            fontFamily: "var(--serif)",
-            fontSize: 18,
-            lineHeight: 1.55,
+            display: "flex",
+            justifyContent: "space-between",
+            fontFamily: "var(--mono)",
+            fontSize: 11,
+            letterSpacing: "0.22em",
             color: "var(--paper-soft)",
-            maxWidth: 520,
+            borderTop: "1.5px solid var(--ink)",
+            paddingTop: 14,
+            marginBottom: 60,
           }}
         >
-          A short list of things I&rsquo;ve built and shipped. Click any row to read the case study —
-          what it is, how it works, what I&rsquo;d change.
+          <span>§ 01 / PROJECTS / SELECTED</span>
+          <span>SHIPPED, ON GITHUB</span>
         </div>
-      </div>
+      </Reveal>
+
+      <Reveal delay={80}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.1fr 1fr",
+            gap: 48,
+            marginBottom: 56,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--serif)",
+              fontSize: "clamp(48px, 6vw, 88px)",
+              fontStyle: "italic",
+              lineHeight: 0.96,
+              letterSpacing: "-0.02em",
+              fontWeight: 400,
+            }}
+          >
+            recent projects.
+          </div>
+          <div
+            style={{
+              alignSelf: "end",
+              fontFamily: "var(--serif)",
+              fontSize: 18,
+              lineHeight: 1.55,
+              color: "var(--paper-soft)",
+              maxWidth: 520,
+            }}
+          >
+            A short list of things I&rsquo;ve built and shipped. Click any row to read the case study:
+            what it is, how it works, what I&rsquo;d change.
+          </div>
+        </div>
+      </Reveal>
 
       {PROJECTS.map((p, i) => (
         <div
@@ -119,15 +124,17 @@ export function Work() {
                 lineHeight: 1.1,
               }}
             >
-              {p.title}{" "}
+              {p.title}
               <span
                 style={{
+                  display: "block",
                   color: "var(--paper-faint)",
                   fontStyle: "italic",
-                  fontSize: "0.7em",
+                  fontSize: "0.62em",
+                  marginTop: 6,
                 }}
               >
-                — {p.subtitle}
+                {p.subtitle}
               </span>
             </div>
             <div style={{ display: "flex", gap: 6, marginTop: 12, flexWrap: "wrap" }}>

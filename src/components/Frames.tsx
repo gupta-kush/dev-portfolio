@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import { GALLERY_PHOTOS, type GalleryPhoto } from "../photos";
+import { Reveal } from "./Reveal";
 
 const ROWS = 3;
 const ROW_H = 200;
@@ -72,22 +73,24 @@ export function Frames({
       }}
     >
       <div style={{ padding: "0 clamp(20px, 3vw, 36px)" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontFamily: "var(--mono)",
-            fontSize: 11,
-            letterSpacing: "0.22em",
-            color: "var(--ink-faint)",
-            borderTop: "1.5px solid var(--rule)",
-            paddingTop: 14,
-            marginBottom: 60,
-          }}
-        >
-          <span>§ 02 — PICS / LIGHT</span>
-          <span>SHOT ON FUJI X-T50 · X-S10 · IPHONE 15 PRO</span>
-        </div>
+        <Reveal>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontFamily: "var(--mono)",
+              fontSize: 11,
+              letterSpacing: "0.22em",
+              color: "var(--ink-faint)",
+              borderTop: "1.5px solid var(--rule)",
+              paddingTop: 14,
+              marginBottom: 60,
+            }}
+          >
+            <span>§ 02 / PICS / LIGHT</span>
+            <span>SHOT ON FUJI X-T50 · X-S10 · IPHONE 15 PRO</span>
+          </div>
+        </Reveal>
 
         <div
           style={{
@@ -99,18 +102,20 @@ export function Frames({
             gap: 18,
           }}
         >
-          <div
-            style={{
-              fontFamily: "var(--serif)",
-              fontStyle: "italic",
-              fontSize: "clamp(40px, 6vw, 88px)",
-              letterSpacing: "-0.02em",
-              lineHeight: 0.96,
-              fontWeight: 400,
-            }}
-          >
-            light I caught.
-          </div>
+          <Reveal delay={80}>
+            <div
+              style={{
+                fontFamily: "var(--serif)",
+                fontStyle: "italic",
+                fontSize: "clamp(40px, 6vw, 88px)",
+                letterSpacing: "-0.02em",
+                lineHeight: 0.96,
+                fontWeight: 400,
+              }}
+            >
+              light I caught.
+            </div>
+          </Reveal>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {[{ v: "all", l: "All" }, ...cameras.map((c) => ({ v: c, l: c }))].map((f) => (
               <button

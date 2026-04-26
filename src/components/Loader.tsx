@@ -84,30 +84,33 @@ function Loader({ play, onDone }: { play: boolean; onDone?: () => void }) {
     setProgress(0);
     setPhase("metering");
     const start = performance.now();
-    const DURATION = 1400; // metering: 0 → 100 over 1.4s
+    const DURATION = 1200; // metering: 0 → 100 over 1.2s, smooth ease-out
+    const READOUT_INTERVAL = 110; // throttle ƒ-stop / shutter shuffle (ms)
     let raf = 0;
+    let lastReadout = 0;
     const timeouts: number[] = [];
 
     const tick = (t: number) => {
       const e = Math.min(1, (t - start) / DURATION);
+      // Cubic ease-out gives a clean sweep without a perceptible mid-jolt.
       const eased = 1 - Math.pow(1 - e, 3);
-      const stutter = e > 0.78 && e < 0.82 ? -0.02 : 0;
-      const p = Math.max(0, Math.min(100, Math.round((eased + stutter) * 100)));
-      setProgress(p);
-      // Readout shuffle slows as we approach lock.
-      setReadoutTick((r) => r + 1);
+      setProgress(Math.round(eased * 100));
+      if (t - lastReadout >= READOUT_INTERVAL) {
+        lastReadout = t;
+        setReadoutTick((r) => r + 1);
+      }
       if (e < 1) {
         raf = requestAnimationFrame(tick);
       } else {
         setProgress(100);
         setPhase("lock-focus");
-        timeouts.push(window.setTimeout(() => setPhase("lock-exposure"), 220));
-        timeouts.push(window.setTimeout(() => setPhase("reveal"), 520));
+        timeouts.push(window.setTimeout(() => setPhase("lock-exposure"), 200));
+        timeouts.push(window.setTimeout(() => setPhase("reveal"), 460));
         timeouts.push(
           window.setTimeout(() => {
             setPhase("done");
             onDoneRef.current?.();
-          }, 1080),
+          }, 980),
         );
       }
     };

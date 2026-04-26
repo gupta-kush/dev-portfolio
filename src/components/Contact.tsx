@@ -2,6 +2,7 @@
 // bottom rule with copyright + back-to-top.
 
 import { ContactCard } from "./ContactCard";
+import { Reveal } from "./Reveal";
 import { PROFILE } from "../content";
 
 export function Contact() {
@@ -11,53 +12,59 @@ export function Contact() {
       data-screen-label="04 Contact"
       style={{ background: "#0a0908", color: "var(--paper)", padding: "140px 36px 60px" }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontFamily: "var(--mono)",
-          fontSize: 11,
-          letterSpacing: "0.22em",
-          color: "var(--ink-faint)",
-          borderTop: "1.5px solid var(--rule)",
-          paddingTop: 14,
-          marginBottom: 60,
-        }}
-      >
-        <span>§ 04 — CONTACT</span>
-        <span>END OF ROLL</span>
-      </div>
-
-      <div style={{ textAlign: "center", marginBottom: 56 }}>
+      <Reveal>
         <div
           style={{
-            fontFamily: "var(--serif)",
-            fontStyle: "italic",
-            fontSize: "clamp(56px, 7.4vw, 120px)",
-            letterSpacing: "-0.025em",
-            lineHeight: 0.94,
-            fontWeight: 400,
+            display: "flex",
+            justifyContent: "space-between",
+            fontFamily: "var(--mono)",
+            fontSize: 11,
+            letterSpacing: "0.22em",
+            color: "var(--ink-faint)",
+            borderTop: "1.5px solid var(--rule)",
+            paddingTop: 14,
+            marginBottom: 60,
           }}
         >
-          contact me.
+          <span>§ 04 / CONTACT</span>
+          <span>END OF ROLL</span>
         </div>
-        <div
-          style={{
-            fontFamily: "var(--serif)",
-            fontSize: 18,
-            lineHeight: 1.55,
-            color: "var(--ink-soft)",
-            marginTop: 22,
-            maxWidth: 540,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          Take a card, drop a line.
-        </div>
-      </div>
+      </Reveal>
 
-      <ContactCard />
+      <Reveal delay={80}>
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <div
+            style={{
+              fontFamily: "var(--serif)",
+              fontStyle: "italic",
+              fontSize: "clamp(56px, 7.4vw, 120px)",
+              letterSpacing: "-0.025em",
+              lineHeight: 0.94,
+              fontWeight: 400,
+            }}
+          >
+            contact me.
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--serif)",
+              fontSize: 18,
+              lineHeight: 1.55,
+              color: "var(--ink-soft)",
+              marginTop: 22,
+              maxWidth: 540,
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            Take a card, drop a line.
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal delay={160}>
+        <ContactCard />
+      </Reveal>
 
       <div
         style={{

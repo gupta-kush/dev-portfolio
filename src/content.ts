@@ -68,10 +68,10 @@ export const PROJECTS: Project[] = [
       ],
     },
     blocks: [
-      { h: "CONTEXT", p: 'I wanted to ask an LLM things like "play something quiet for a rainy afternoon" — and have it actually run end to end against my real Spotify account.' },
-      { h: "APPROACH", p: "A Model Context Protocol server exposing Spotify's search, playback and library APIs as discrete tools. OAuth handles auth, a small cache holds state between sessions so the model has memory." },
-      { h: "NOTES", p: "Rate limits drove the architecture. The model wants to call search() ten times to triangulate a vibe; Spotify allows about two. A semantic cache in front of every read tool dedupes near-identical queries by embedding distance." },
-      { h: "STATUS", p: "Stable, used daily. Roadmap: expose discovery as a separate tool, add per-device routing." },
+      { h: "CONTEXT", p: "I wanted to talk to an LLM about music and have it actually control my Spotify, not just describe what it would do." },
+      { h: "APPROACH", p: "An MCP server that gives an LLM tools for searching, queueing, and playing music through Spotify. OAuth handles login, and a small cache keeps state between sessions so the model can build context over time." },
+      { h: "NOTES", p: "The biggest design constraint was Spotify's rate limits. The model tends to make many similar search calls in a row, which gets blocked quickly. I added a semantic cache that recognizes near-duplicate queries and reuses earlier results." },
+      { h: "STATUS", p: "Stable. I use it every day. Next I want to add a separate discovery tool and per-device routing." },
     ],
   },
   {
@@ -102,10 +102,10 @@ export const PROJECTS: Project[] = [
       ],
     },
     blocks: [
-      { h: "CONTEXT", p: "Every link came dressed in utm_source and a dozen other parameters no human asked for. Cleaning them by hand stopped scaling." },
-      { h: "APPROACH", p: "A Manifest V3 extension that uses Chrome's declarativeNetRequest API to rewrite URLs in the background through a curated rule set. No telemetry, no popups." },
-      { h: "NOTES", p: "Whole extension is small. The rule set is the actual product; everything else is plumbing. Open question: ship the rules as community-edited so contributions go through pull requests instead of my inbox." },
-      { h: "STATUS", p: "Published on the Chrome Web Store. Works silently in the background." },
+      { h: "CONTEXT", p: "Most links online include tracking parameters that nobody actually wants. Cleaning them by hand got tedious." },
+      { h: "APPROACH", p: "A Chrome extension that strips tracking parameters from URLs in the background, using a curated rule set. No telemetry, no popups, nothing to configure." },
+      { h: "NOTES", p: "The whole extension is small. The rule set is the real value, and everything else is plumbing. I'm thinking about opening the rules to pull requests so other people can add their own." },
+      { h: "STATUS", p: "Available on the Chrome Web Store. Runs quietly in the background." },
     ],
   },
 ];
