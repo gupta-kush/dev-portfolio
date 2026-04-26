@@ -9,9 +9,9 @@ import { useState } from "react";
 import { GALLERY_PHOTOS, type GalleryPhoto } from "../photos";
 import { Reveal } from "./Reveal";
 
-const ROWS = 3;
+const ROWS = 4;
 const ROW_H = 200;
-const GAP = 10;
+const GAP = 8;
 const BAND_H = ROWS * ROW_H + (ROWS - 1) * GAP;
 
 const seed = (str: string) => {
@@ -22,57 +22,54 @@ const seed = (str: string) => {
 
 type Tile = { p: GalleryPhoto; x: number; y: number; w: number; h: number };
 
-// Slot positions are in row-units. A pattern's slot count matches how many
-// photos that column consumes. Each pattern declares its preferred width
-// range so portrait-heavy columns stay narrower and stacked-short columns
-// can stretch wider.
-type Slot = { y: number; h: number };
-type Pattern = { slots: Slot[]; minW: number; maxW: number };
-
-const PATTERNS: Pattern[] = [
-  { slots: [{ y: 0, h: 3 }], minW: 280, maxW: 380 }, // 1 tall portrait
-  { slots: [{ y: 0, h: 1 }, { y: 1, h: 1 }, { y: 2, h: 1 }], minW: 320, maxW: 460 }, // 3 stacked
-  { slots: [{ y: 0, h: 2 }, { y: 2, h: 1 }], minW: 320, maxW: 420 }, // 2 then 1
-  { slots: [{ y: 0, h: 1 }, { y: 1, h: 2 }], minW: 320, maxW: 420 }, // 1 then 2
-];
-
+// Skyline packer with min-x placement. For each photo we try every valid
+// row offset, compute the resulting x as max(cursor[row..row+span]), and
+// pick the offset with smallest x (tie-break: smallest y for top-first).
+// This avoids the staircase voids the old packer hit when a multi-row
+// photo started inside a row that was further along than its neighbours.
+//
+// Span and width are seeded per-photo so each photo independently chooses
+// a shape — not coupled to a column-pattern. The resulting layout reads
+// as a proper collage rather than tidy 1-3 photo columns.
 function buildPlacements(list: GalleryPhoto[]): { tiles: Tile[]; totalW: number } {
+  const cursor = new Array(ROWS).fill(0);
   const tiles: Tile[] = [];
-  let cursorX = 0;
-  let i = 0;
-  let colIdx = 0;
-  let lastPatIdx = -1;
-  while (i < list.length) {
-    const remaining = list.length - i;
-    // pool of patterns whose slot count fits in remaining photos
-    const valid = PATTERNS.map((p, idx) => ({ p, idx })).filter(
-      ({ p }) => p.slots.length <= remaining,
-    );
-    // pick deterministically from photo seed + column index, avoid repeats
-    const s = seed(list[i].src + ":" + colIdx);
-    let choiceIdx = s % valid.length;
-    if (valid.length > 1 && valid[choiceIdx].idx === lastPatIdx) {
-      choiceIdx = (choiceIdx + 1) % valid.length;
-    }
-    const choice = valid[choiceIdx];
-    const pat = choice.p;
-    lastPatIdx = choice.idx;
+  list.forEach((p, idx) => {
+    const s = seed(p.src + ":" + idx);
+    const r = s % 100;
+    // weighted span distribution: 1-row 50%, 2-row 30%, 3-row 20%
+    const span = r < 50 ? 1 : r < 80 ? 2 : 3;
+    // wider width pool than before — portrait-y when span is large, lots
+    // of variety when span is 1. avoids the old "every column is 280-460"
+    // feel.
+    const widthOpts =
+      span === 1
+        ? [220, 280, 340, 400, 460, 540]
+        : span === 2
+          ? [220, 280, 340, 420, 500]
+          : [200, 260, 320, 380];
+    const w = widthOpts[(s >> 5) % widthOpts.length];
 
-    const colW = pat.minW + ((s >> 5) % (pat.maxW - pat.minW + 1));
-    pat.slots.forEach((slot, k) => {
-      tiles.push({
-        p: list[i + k],
-        x: cursorX,
-        y: slot.y * (ROW_H + GAP),
-        w: colW,
-        h: slot.h * ROW_H + (slot.h - 1) * GAP,
-      });
-    });
-    cursorX += colW + GAP;
-    i += pat.slots.length;
-    colIdx++;
-  }
-  return { tiles, totalW: cursorX };
+    let bestRow = 0;
+    let bestX = Infinity;
+    for (let i = 0; i + span <= ROWS; i++) {
+      let x = 0;
+      for (let j = i; j < i + span; j++) x = Math.max(x, cursor[j]);
+      if (x < bestX) {
+        bestX = x;
+        bestRow = i;
+      }
+    }
+    const x = bestX;
+    const y = bestRow * (ROW_H + GAP);
+    const h = span * ROW_H + (span - 1) * GAP;
+    tiles.push({ p, x, y, w, h });
+    for (let i = bestRow; i < bestRow + span; i++) cursor[i] = x + w + GAP;
+  });
+  // pad cursors so all rows end at the same x — the marquee loop then
+  // sees a uniform total width regardless of which row finished latest.
+  const totalW = Math.max(...cursor);
+  return { tiles, totalW };
 }
 
 export function Frames({
