@@ -127,7 +127,7 @@ export function Frames({
             }}
           >
             <span>§ 02 / PICS / LIGHT</span>
-            <span>SHOT ON FUJI X-T50 · X-S10 · IPHONE 15 PRO</span>
+            <span>SHOT ON FUJI X-T50 · X-S10</span>
           </div>
         </Reveal>
 
