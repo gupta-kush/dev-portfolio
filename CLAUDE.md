@@ -158,6 +158,53 @@ Form" email and submissions return `{success: "false"}` until clicked.
 | `tools/convert-heic.py` | Python + pillow-heif fallback for HEIC decoding. Required on Windows. |
 | `tools/shrink-sources.mjs` | Re-encodes everything in `src/assets/photos/` to ≤2800px JPEG q=88 mozjpeg. |
 
+## Design history (why things are the way they are)
+
+The site went through Claude Design wireframing before code. The user
+picked the **Aperture** direction (full-bleed photo hero, kinetic
+wordmark, photography-as-metaphor) over five other concepts, and asked
+to fold in the scroll-driven transitions from a "Long Exposure"
+concept. That mash-up is the spine of the site. Shorthand for the
+rationale behind specific decisions:
+
+- **Photography metaphor is load-bearing.** The user explicitly asked
+  to avoid generic-portfolio language. Section titles like "light I
+  caught", "say something nice", and the viewfinder loader / exposure
+  meter / ƒ-stop labels all come from this brief. Don't sand them
+  down.
+- **Case studies use typographic artifacts (file tree / terminal /
+  diff / git log) instead of screenshots** because the user's projects
+  often don't have eye-catching screens — a Spotify MCP server, a URL
+  cleaner extension, a backend platform. The artifacts represent the
+  actual character of each project. The four `blocks` per project
+  (CONTEXT / APPROACH / NOTES / STATUS) replaced earlier theatrical
+  labels ("the itch", "the tricky bit") that the user found dramatic.
+- **Two identity marks ship by design.** `MarkApertureCode` (`</>`
+  geometric, default) was picked over `MarkApertureKG` (KG initials)
+  for the live site, but both are kept in `Wordmark.tsx` with their
+  workshop-locked slider values. The user wants the option to swap.
+- **The gallery went through four implementations** before settling on
+  the current aspect-aware multi-row marquee. Earlier attempts: column
+  shelf packer (felt patterned), skyline packer (left visible voids),
+  recursive rectangle dissection (zero gaps but cropped portraits into
+  landscape boxes). The current approach uses three independent rows
+  scrolling at different speeds in opposing directions, with each
+  photo sized as `aspect × rowHeight` so portraits stay portrait. The
+  parallax of mismatched speeds is what stops it reading as "1–2 rows
+  scrolling."
+- **Section seams used to be labelled bands** ("DISPLACEMENT", "GRAIN
+  BLOOM", etc.). The user called them clutter. They became wide
+  gradient strips, then ambient `Atmosphere` overlays inside each
+  section's top edge so sections butt directly together with no
+  layout cost.
+- **No theme toggle, no font/accent tweaks panel.** Both existed
+  during iteration; the user removed them as design tooling that
+  shouldn't ship to visitors.
+- **Loader is sessionStorage-gated, not route-gated.** The 600 ms-ish
+  viewfinder intro plays once per session and respects
+  `prefers-reduced-motion`. It must not replay on client-side
+  navigation.
+
 ## Gotchas observed during build-out
 
 - The user is on Windows. Bash environment exists (cygpath, etc.) but
