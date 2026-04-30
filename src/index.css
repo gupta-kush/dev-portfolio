@@ -142,14 +142,11 @@ a { color: inherit; text-decoration: none; }
   to   { transform: translate3d(-50%, 0, 0); }
 }
 
-/* gallery row scroll directions — content is duplicated, the parent translates by 50% for a seamless loop */
-@keyframes frames-rtl {
+/* gallery wall drift — the canvas is duplicated side-by-side; the
+   wrapper translates by 50% for a seamless loop */
+@keyframes frames-wall {
   from { transform: translate3d(0, 0, 0); }
   to   { transform: translate3d(-50%, 0, 0); }
-}
-@keyframes frames-ltr {
-  from { transform: translate3d(-50%, 0, 0); }
-  to   { transform: translate3d(0, 0, 0); }
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }

@@ -1,82 +1,169 @@
-// Photo gallery as three horizontally-scrolling rows of different heights
-// and opposing scroll speeds. Each photo's width is its natural aspect
-// ratio times the row height, so a landscape shot reads as a landscape
-// rectangle and a portrait reads as a portrait. Within a row there is
-// zero whitespace by construction (it's just photos chained at fixed
-// height). The parallax of three different speeds + alternating scroll
-// directions reads as a 2D collage rather than tidy horizontal rows.
+// Photo gallery as a single horizontally-drifting wall. Photos are
+// packed into variable-width columns; each column holds 1, 2, or 3
+// photos stacked vertically. For 2- and 3-photo columns the heights
+// are solved so every photo in the column has the same width — that
+// keeps each column void-free at its natural aspects. Because column
+// widths vary and the y-position of the inter-photo seams varies per
+// column, the wall never reads as horizontal rows.
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { GALLERY_PHOTOS, type GalleryPhoto } from "../photos";
 import { Reveal } from "./Reveal";
 import { Atmosphere } from "./Atmosphere";
 import { useIsMobile } from "../hooks/useMediaQuery";
 
-type Row = {
-  height: number;
-  duration: string; // CSS animation duration
-  direction: "ltr" | "rtl";
+const BAND_DESKTOP = 540;
+const BAND_MOBILE = 360;
+const GAP_X = 6;
+const GAP_Y = 6;
+const TARGET_CANVAS_W = 3200; // minimum width before we duplicate for the loop
+const DURATION_DESKTOP = 110; // seconds for one full canvas pass
+const DURATION_MOBILE = 70;
+
+// Deterministic PRNG so layouts are stable across renders.
+function mulberry32(seed: number) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+type Place = {
+  p: GalleryPhoto;
+  origIdx: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  key: string;
 };
 
-// Three rows, varied heights for visual rhythm. Top + bottom scroll one
-// way, middle scrolls the other way at a different speed — produces the
-// parallax that breaks the "rows scrolling" feel. Heights tuned to fit
-// inside a 1080p viewport once the section header + footer are added.
-const ROWS_DESKTOP: Row[] = [
-  { height: 200, duration: "85s", direction: "rtl" },
-  { height: 150, duration: "70s", direction: "ltr" },
-  { height: 200, duration: "95s", direction: "rtl" },
-];
+// Width that makes two stacked photos share the same column width given
+// inner stack height = h1 + h2 = innerH.  a1*h1 = a2*h2 ⇒ h1 = a2*innerH/(a1+a2)
+function solveStackTwo(a1: number, a2: number, innerH: number) {
+  const h1 = (a2 * innerH) / (a1 + a2);
+  const h2 = innerH - h1;
+  const w = a1 * h1; // == a2 * h2
+  return { h1, h2, w };
+}
 
-// Tighter rows on mobile so the gallery fits inside a typical phone
-// viewport without dominating the page.
-const ROWS_MOBILE: Row[] = [
-  { height: 130, duration: "60s", direction: "rtl" },
-  { height: 100, duration: "50s", direction: "ltr" },
-  { height: 130, duration: "70s", direction: "rtl" },
-];
+// Three-photo stack: w/a1 + w/a2 + w/a3 = innerH ⇒ w = innerH / Σ(1/ai)
+function solveStackThree(a1: number, a2: number, a3: number, innerH: number) {
+  const w = innerH / (1 / a1 + 1 / a2 + 1 / a3);
+  return { h1: w / a1, h2: w / a2, h3: w / a3, w };
+}
 
-const ROW_GAP = 8;
-const PHOTO_GAP = 6;
-
-// Width a photo would occupy in a given row given its native aspect.
-const photoWidth = (p: GalleryPhoto, rowH: number) => Math.round(p.aspect * rowH);
-
-// Distribute photos across rows. Portraits and landscapes are interleaved
-// so each row gets a mix of orientations rather than a clump of all-tall
-// or all-wide. Each row's content is then repeated until it's wide enough
-// for the marquee to feel populated even with a small photo set.
-function distributeRows(list: GalleryPhoto[], rows: Row[]): GalleryPhoto[][] {
-  if (list.length === 0) return rows.map(() => []);
-  // Interleave portraits and landscapes
+// Photos sorted so portraits and landscapes are interleaved — gives
+// stacks a mix of orientations rather than three skinny portraits in a
+// column or three wide panoramas crushed thin.
+function interleaveByOrientation(list: GalleryPhoto[]): GalleryPhoto[] {
   const portraits = list.filter((p) => p.aspect < 0.95);
   const landscapes = list.filter((p) => p.aspect >= 0.95);
-  const interleaved: GalleryPhoto[] = [];
+  const out: GalleryPhoto[] = [];
   let pi = 0;
   let li = 0;
   while (pi < portraits.length || li < landscapes.length) {
-    if (li < landscapes.length) interleaved.push(landscapes[li++]);
-    if (pi < portraits.length) interleaved.push(portraits[pi++]);
+    if (li < landscapes.length) out.push(landscapes[li++]);
+    if (pi < portraits.length) out.push(portraits[pi++]);
   }
-  const buckets: GalleryPhoto[][] = rows.map(() => []);
-  interleaved.forEach((p, i) => {
-    buckets[i % rows.length].push(p);
-  });
-  // Repeat each bucket so its content is wide enough that the marquee
-  // duplication doesn't show obvious gaps with sparse photo sets.
-  const TARGET_ROW_W = 2600;
-  return buckets.map((bucket, ri) => {
-    if (bucket.length === 0) return bucket;
-    const rowH = rows[ri].height;
-    const oneCycleW = bucket.reduce(
-      (s, p) => s + photoWidth(p, rowH) + PHOTO_GAP,
-      0,
-    );
-    const reps = Math.max(2, Math.ceil(TARGET_ROW_W / Math.max(oneCycleW, 1)));
-    const out: GalleryPhoto[] = [];
-    for (let r = 0; r < reps; r++) out.push(...bucket);
-    return out;
-  });
+  return out;
+}
+
+// Pack photos into a single horizontal canvas of stacked columns.
+// Returns placements + total canvas width.  The same `seedOffset` always
+// produces the same layout, so re-renders don't reshuffle photos.
+function packWall(
+  photos: GalleryPhoto[],
+  bandH: number,
+  filteredOrigIndex: (p: GalleryPhoto) => number,
+  seedOffset = 0,
+): { places: Place[]; canvasW: number } {
+  const places: Place[] = [];
+  if (photos.length === 0) return { places, canvasW: 0 };
+
+  // Repeat the photo list until packing it would exceed TARGET_CANVAS_W.
+  // Average column width ≈ 0.9 × bandH; one cycle ≈ photos.length × that.
+  const avgColW = bandH * 0.9;
+  const minReps = Math.max(1, Math.ceil(TARGET_CANVAS_W / Math.max(photos.length * avgColW, 1)));
+  const sequence: GalleryPhoto[] = [];
+  for (let r = 0; r < minReps; r++) sequence.push(...photos);
+
+  const rng = mulberry32(1337 + seedOffset);
+
+  let cursor = 0;
+  let i = 0;
+  let colCount = 0;
+  while (i < sequence.length) {
+    const remaining = sequence.length - i;
+    const innerH2 = bandH - GAP_Y;
+    const innerH3 = bandH - 2 * GAP_Y;
+
+    // Pick a column type (1 / 2 / 3 photos).  Bias toward 2-stacks for
+    // density, with full-height singles and triples sprinkled in.
+    let stackSize: 1 | 2 | 3;
+    const r = rng();
+    if (remaining >= 3 && r < 0.18) stackSize = 3;
+    else if (remaining >= 2 && r < 0.78) stackSize = 2;
+    else stackSize = 1;
+
+    // Avoid two singles in a row late in the sequence — keeps rhythm
+    // varied when filter shrinks the photo set.
+    if (stackSize === 1 && remaining >= 2 && colCount > 0) {
+      const lastWasSingle =
+        places.length > 0 &&
+        places[places.length - 1].h === bandH &&
+        (places.length === 1 || places[places.length - 2].x !== places[places.length - 1].x);
+      if (lastWasSingle && rng() < 0.7) stackSize = 2;
+    }
+
+    if (stackSize === 3) {
+      const [p1, p2, p3] = [sequence[i], sequence[i + 1], sequence[i + 2]];
+      const { h1, h2, h3, w } = solveStackThree(p1.aspect, p2.aspect, p3.aspect, innerH3);
+      // Reject pathologically narrow triples (all-portraits give very
+      // thin columns).  Fall back to a 2-stack.
+      if (w < bandH * 0.42) {
+        stackSize = 2;
+      } else {
+        places.push({ p: p1, origIdx: filteredOrigIndex(p1), x: cursor, y: 0, w, h: h1, key: `${i}-0` });
+        places.push({ p: p2, origIdx: filteredOrigIndex(p2), x: cursor, y: h1 + GAP_Y, w, h: h2, key: `${i}-1` });
+        places.push({ p: p3, origIdx: filteredOrigIndex(p3), x: cursor, y: h1 + h2 + 2 * GAP_Y, w, h: h3, key: `${i}-2` });
+        cursor += w + GAP_X;
+        i += 3;
+        colCount++;
+        continue;
+      }
+    }
+
+    if (stackSize === 2) {
+      const [p1, p2] = [sequence[i], sequence[i + 1]];
+      const { h1, h2, w } = solveStackTwo(p1.aspect, p2.aspect, innerH2);
+      // If the stack would be unreasonably narrow (two tall portraits)
+      // or unreasonably wide (two wide panoramas), fall back to singles.
+      if (w < bandH * 0.42 || w > bandH * 2.2) {
+        stackSize = 1;
+      } else {
+        places.push({ p: p1, origIdx: filteredOrigIndex(p1), x: cursor, y: 0, w, h: h1, key: `${i}-0` });
+        places.push({ p: p2, origIdx: filteredOrigIndex(p2), x: cursor, y: h1 + GAP_Y, w, h: h2, key: `${i}-1` });
+        cursor += w + GAP_X;
+        i += 2;
+        colCount++;
+        continue;
+      }
+    }
+
+    const p = sequence[i];
+    const w = p.aspect * bandH;
+    places.push({ p, origIdx: filteredOrigIndex(p), x: cursor, y: 0, w, h: bandH, key: `${i}-0` });
+    cursor += w + GAP_X;
+    i += 1;
+    colCount++;
+  }
+
+  return { places, canvasW: cursor };
 }
 
 export function Frames({
@@ -86,17 +173,27 @@ export function Frames({
 }) {
   const [filter, setFilter] = useState<string>("all");
   const isMobile = useIsMobile();
-  const ROWS = isMobile ? ROWS_MOBILE : ROWS_DESKTOP;
-  const BAND_H = ROWS.reduce((s, r) => s + r.height, 0) + (ROWS.length - 1) * ROW_GAP;
+  const bandH = isMobile ? BAND_MOBILE : BAND_DESKTOP;
+  const duration = isMobile ? DURATION_MOBILE : DURATION_DESKTOP;
 
-  const filtered =
-    filter === "all"
-      ? GALLERY_PHOTOS
-      : GALLERY_PHOTOS.filter((p) => p.exif.camera === filter);
+  const filtered = useMemo(
+    () =>
+      filter === "all"
+        ? GALLERY_PHOTOS
+        : GALLERY_PHOTOS.filter((p) => p.exif.camera === filter),
+    [filter],
+  );
 
-  const cameras = Array.from(new Set(GALLERY_PHOTOS.map((p) => p.exif.camera)));
+  const cameras = useMemo(
+    () => Array.from(new Set(GALLERY_PHOTOS.map((p) => p.exif.camera))),
+    [],
+  );
 
-  const rowPhotos = distributeRows(filtered, ROWS);
+  const { places, canvasW } = useMemo(() => {
+    const ordered = interleaveByOrientation(filtered);
+    const indexOf = (p: GalleryPhoto) => filtered.indexOf(p);
+    return packWall(ordered, bandH, indexOf, filter === "all" ? 0 : filter.length);
+  }, [filtered, bandH, filter]);
 
   return (
     <section
@@ -185,87 +282,63 @@ export function Frames({
         style={{
           position: "relative",
           width: "100%",
-          height: BAND_H,
+          height: bandH,
           overflow: "hidden",
           zIndex: 1,
         }}
       >
-        {ROWS.map((row, rIdx) => {
-          const photos = rowPhotos[rIdx];
-          if (photos.length === 0) return null;
-          // Total width of photos in this row (one copy worth)
-          const rowWidth = photos.reduce((sum, p) => sum + photoWidth(p, row.height) + PHOTO_GAP, 0);
-          const top = ROWS.slice(0, rIdx).reduce((s, r) => s + r.height + ROW_GAP, 0);
-          const animName = row.direction === "rtl" ? "frames-rtl" : "frames-ltr";
-          return (
-            <div
-              key={rIdx}
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top,
-                height: row.height,
-                overflow: "hidden",
-              }}
-            >
-              <div
+        {/* The wall: one canvas of width `canvasW`, duplicated side-by-side
+           for a seamless loop.  The wrapper translates from 0 to -canvasW
+           over `duration` seconds. */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: bandH,
+            width: canvasW * 2,
+            animation: `frames-wall ${duration}s linear infinite`,
+            willChange: "transform",
+          }}
+        >
+          {[0, 1].map((copy) =>
+            places.map((pl) => (
+              <button
+                key={`${copy}-${pl.key}`}
+                onClick={() => onOpen(pl.origIdx, filtered)}
+                className="imgph"
                 style={{
-                  position: "relative",
-                  height: "100%",
-                  width: rowWidth * 2,
-                  animation: `${animName} ${row.duration} linear infinite`,
-                  willChange: "transform",
+                  position: "absolute",
+                  left: copy * canvasW + pl.x,
+                  top: pl.y,
+                  width: pl.w,
+                  height: pl.h,
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  transition:
+                    "transform .35s cubic-bezier(.2,.7,.3,1), filter .35s, z-index 0s .35s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.02)";
+                  e.currentTarget.style.filter = "brightness(1.08)";
+                  e.currentTarget.style.zIndex = "5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "";
+                  e.currentTarget.style.filter = "";
+                  e.currentTarget.style.zIndex = "";
                 }}
               >
-                {[0, 1].map((copy) => {
-                  let cursor = copy * rowWidth;
-                  return photos.map((p, pi) => {
-                    const w = photoWidth(p, row.height);
-                    const x = cursor;
-                    cursor += w + PHOTO_GAP;
-                    const photoIdxInList = filtered.indexOf(p);
-                    return (
-                      <button
-                        key={`${rIdx}-${copy}-${pi}`}
-                        onClick={() => onOpen(photoIdxInList, filtered)}
-                        className="imgph"
-                        style={{
-                          position: "absolute",
-                          left: x,
-                          top: 0,
-                          width: w,
-                          height: row.height,
-                          border: "none",
-                          padding: 0,
-                          cursor: "pointer",
-                          transition:
-                            "transform .35s cubic-bezier(.2,.7,.3,1), filter .35s, z-index 0s .35s",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "scale(1.02)";
-                          e.currentTarget.style.filter = "brightness(1.08)";
-                          e.currentTarget.style.zIndex = "5";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "";
-                          e.currentTarget.style.filter = "";
-                          e.currentTarget.style.zIndex = "";
-                        }}
-                      >
-                        <img src={p.src} alt={p.title} loading="lazy" />
-                        <div className="label">{p.exif.camera.toUpperCase()}</div>
-                        <div className="meta">
-                          {p.exif.focal} · {p.exif.aperture} · {p.exif.shutter}
-                        </div>
-                      </button>
-                    );
-                  });
-                })}
-              </div>
-            </div>
-          );
-        })}
+                <img src={pl.p.src} alt={pl.p.title} loading="lazy" />
+                <div className="label">{pl.p.exif.camera.toUpperCase()}</div>
+                <div className="meta">
+                  {pl.p.exif.focal} · {pl.p.exif.aperture} · {pl.p.exif.shutter}
+                </div>
+              </button>
+            )),
+          )}
+        </div>
         {/* edge fades to soften the loop boundary */}
         <div
           style={{
