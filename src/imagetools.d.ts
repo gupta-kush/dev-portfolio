@@ -37,12 +37,10 @@ declare module "*.heif" {
   export default src;
 }
 
-// Allow query-string imports e.g. "./img.jpeg?w=400;800&format=webp&as=srcset".
-declare module "*?w=*" {
-  const value: string;
-  export default value;
-}
-declare module "*?format=*" {
-  const value: string;
-  export default value;
+// Allow query-string imports for the lightbox's higher-resolution
+// variant. TypeScript module patterns allow only one wildcard per
+// pattern, so we pin the exact query string used by photos.ts.
+declare module "*?w=2400&format=webp&quality=85" {
+  const src: string;
+  export default src;
 }

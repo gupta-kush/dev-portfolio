@@ -52,7 +52,7 @@ export function Lightbox({ photos, idx, onClose, onNav }: Props) {
         }}
       >
         <img
-          src={p.src.replace("w=1200", "w=2000")}
+          src={p.srcFull}
           alt={p.title}
           style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
         />
