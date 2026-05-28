@@ -218,30 +218,32 @@ function HeroBottomBar() {
         </a>
       ))}
 
-      {/* Primary action — accent-filled, the obvious "way in" for new visitors. */}
+      {/* Primary action — accent-outlined glass slab, less shouty than a fill. */}
       <a
         href="#projects"
         onClick={scrollToProjects}
         style={{
           padding: "14px 16px",
-          border: "1px solid var(--accent)",
-          background: "var(--accent)",
-          color: "var(--ink)",
+          border: "2px solid var(--accent)",
+          background: "rgba(0,0,0,.32)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
           transition: "border-color .25s, background .25s, transform .25s",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = "var(--accent-warm)";
+          e.currentTarget.style.background = "rgba(255,184,107,.18)";
           e.currentTarget.style.borderColor = "var(--accent-warm)";
           e.currentTarget.style.transform = "translateY(-2px)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = "var(--accent)";
+          e.currentTarget.style.background = "rgba(0,0,0,.32)";
           e.currentTarget.style.borderColor = "var(--accent)";
           e.currentTarget.style.transform = "";
         }}
       >
-        <div style={{ fontSize: 11, opacity: 0.62, letterSpacing: "0.22em" }}>↓ DEVELOP</div>
-        <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.06em", marginTop: 5 }}>
+        <div style={{ fontSize: 11, opacity: 0.85, letterSpacing: "0.22em", color: "var(--accent)" }}>↓ DEVELOP</div>
+        <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.06em", marginTop: 5, color: "var(--accent)" }}>
           SEE MY WORK
         </div>
         <div style={{ fontSize: 11, opacity: 0.72, marginTop: 4, letterSpacing: "0.04em" }}>
