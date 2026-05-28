@@ -50,7 +50,7 @@ export function Contact() {
               fontWeight: 400,
             }}
           >
-            contact me.
+            contact me
           </div>
           <div
             style={{

@@ -61,7 +61,7 @@ export function Work() {
               fontWeight: 400,
             }}
           >
-            recent projects.
+            open source projects
           </div>
           <div
             style={{

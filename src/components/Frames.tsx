@@ -249,7 +249,7 @@ export function Frames({
                 fontWeight: 400,
               }}
             >
-              light I caught.
+              recent favs
             </div>
           </Reveal>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>

@@ -57,7 +57,7 @@ export function CV() {
               fontWeight: 400,
             }}
           >
-            resume.
+            resume
           </div>
           <div
             style={{
