@@ -13,51 +13,52 @@ the steps below.
 
 [resume-repo]: https://github.com/gupta-kush/kush-gupta-resume
 
-## One-time setup
+## One-time setup (~5 minutes)
 
-### 1. Create two fine-grained PATs
+You'll create **one** fine-grained PAT, install it as a secret in
+both repos, and drop a tiny workflow into the resume repo. That's
+it.
 
-GitHub → Settings → Developer settings → Personal access tokens →
-**Fine-grained tokens** → "Generate new token".
+### 1. Create the fine-grained PAT
 
-#### Token A — `RESUME_READ_TOKEN` (lives in the portfolio repo)
+Go to https://github.com/settings/personal-access-tokens/new and fill in:
 
 | Field | Value |
 |---|---|
+| Token name | `Resume sync` (or anything memorable) |
 | Resource owner | your account (`gupta-kush`) |
-| Repository access | Only select repositories → `gupta-kush/kush-gupta-resume` |
-| Repository permissions | **Contents: Read-only** |
+| Repository access | **Only select repositories** → tick both `gupta-kush/dev-portfolio` *and* `gupta-kush/kush-gupta-resume` |
+| Repository permissions → Contents | **Read and write** |
 | Expiration | up to 1 year (GitHub's max); set a calendar reminder to rotate |
 
-#### Token B — `PORTFOLIO_DISPATCH_TOKEN` (lives in the resume repo)
+Click **Generate token**. Copy the value — it's only shown once.
 
-| Field | Value |
-|---|---|
-| Resource owner | your account (`gupta-kush`) |
-| Repository access | Only select repositories → `gupta-kush/dev-portfolio` |
-| Repository permissions | **Contents: Read and write** *(required by the `repository_dispatch` API for fine-grained tokens)* |
-| Expiration | same |
+> **Scope trade-off**: fine-grained PATs apply one permission set
+> across all selected repos, so this token can technically write to
+> the resume repo too — broader than the sync strictly needs. That's
+> the cost of using one token instead of two. If you want strict
+> least-privilege, fall back to the two-PAT setup (see git history
+> for the prior version of this doc) — that needs `Contents: Read`
+> on the resume repo and `Contents: Write` on the portfolio repo,
+> separately.
 
-> Why two tokens? Principle of least privilege — each side gets only
-> what it needs. One token with broad scope on both repos would also
-> work, but is harder to audit.
+### 2. Add the same token as a secret in both repos
 
-### 2. Add the secrets
+The fastest path is `gh` CLI — you'll be prompted to paste the token,
+it never leaves your terminal:
 
-#### In `dev-portfolio` (this repo)
-GitHub → Settings → Secrets and variables → Actions → "New repository secret"
-- **Name:** `RESUME_READ_TOKEN`
-- **Value:** paste Token A
+```bash
+gh secret set RESUME_SYNC_TOKEN -R gupta-kush/dev-portfolio
+gh secret set RESUME_SYNC_TOKEN -R gupta-kush/kush-gupta-resume
+```
 
-#### In `kush-gupta-resume`
-Same UI, that repo.
-- **Name:** `PORTFOLIO_DISPATCH_TOKEN`
-- **Value:** paste Token B
+Or via the browser:
+- **dev-portfolio** → Settings → Secrets and variables → Actions → "New repository secret" → Name `RESUME_SYNC_TOKEN`, value = the PAT
+- **kush-gupta-resume** → same UI, same name and value
 
-### 3. Add the notify workflow to the resume repo
+### 3. Drop the notify workflow into the resume repo
 
-Create `.github/workflows/notify-portfolio.yml` in `kush-gupta-resume`
-with this content:
+Create `.github/workflows/notify-portfolio.yml` in `kush-gupta-resume`:
 
 ```yaml
 name: Notify portfolio of resume update
@@ -68,8 +69,8 @@ on:
       - Kush_Gupta_resume.pdf
     branches: [main]
 
-# This workflow doesn't read or write its own repo — it only
-# fires an event at the portfolio repo via PAT.
+# Workflow only fires an API call at the portfolio repo; it doesn't
+# touch this repo's contents.
 permissions: {}
 
 jobs:
@@ -78,7 +79,7 @@ jobs:
     steps:
       - name: Fire repository_dispatch at portfolio
         env:
-          GH_TOKEN: ${{ secrets.PORTFOLIO_DISPATCH_TOKEN }}
+          GH_TOKEN: ${{ secrets.RESUME_SYNC_TOKEN }}
         run: |
           curl -sSL --fail-with-body \
             -X POST \
@@ -89,7 +90,7 @@ jobs:
             -d '{"event_type":"resume-updated"}'
 ```
 
-Commit it on `main`. Done.
+Commit it on `main`. Setup complete.
 
 ### 4. (Optional) Delete the loose PDF from this repo
 
@@ -115,13 +116,13 @@ push Kush_Gupta_resume.pdf
    ▼
 notify-portfolio.yml
    │  curl POST /dispatches
-   │  (auth: PORTFOLIO_DISPATCH_TOKEN)
+   │  (auth: RESUME_SYNC_TOKEN)
    └──────────────────────────────► repository_dispatch
                                        │  type: resume-updated
                                        ▼
                                     deploy.yml runs
                                        │  sparse-checkout
-                                       │  (auth: RESUME_READ_TOKEN)
+                                       │  (auth: RESUME_SYNC_TOKEN)
                                        │  cp → public/resume.pdf
                                        │  npm run build
                                        ▼
@@ -145,7 +146,7 @@ file with a tiny edit and commit). You should see:
 3. **Live**: `https://kushgupta.dev/resume.pdf` serves the new file
    within ~1–2 minutes total.
 
-If step 2 logs "RESUME\_READ\_TOKEN not set — using committed
+If step 2 logs "RESUME\_SYNC\_TOKEN not set — using committed
 public/resume.pdf as fallback", you missed adding the secret to the
 portfolio repo. Re-check step 2 of setup.
 
@@ -160,12 +161,10 @@ Free.
   resume updates a year is well under 1% of the quota.
 - Fine-grained PATs are free.
 
-## Rotating tokens
+## Rotating the token
 
-Both PATs have an expiration. When one expires, GitHub Actions runs
-will fail with an auth error in the relevant step. Generate a new
-token with the same scopes, update the secret in the corresponding
-repo, and you're back to green. The expiration date is visible on
-the [tokens page][pat-page] — set a calendar reminder a week before.
-
-[pat-page]: https://github.com/settings/tokens?type=beta
+When the PAT expires, both workflows will fail with an auth error.
+Generate a new token with the same scopes and update the secret in
+both repos (one `gh secret set` per repo, same as setup step 2). Set
+a calendar reminder a week before expiry — the date is visible at
+https://github.com/settings/tokens?type=beta.

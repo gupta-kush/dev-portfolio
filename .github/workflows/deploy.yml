@@ -25,20 +25,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Gate the resume-sync steps behind the secret. If RESUME_READ_TOKEN
+      # Gate the resume-sync steps behind the secret. If RESUME_SYNC_TOKEN
       # isn't set yet, the build falls back to the committed
       # public/resume.pdf instead of breaking.
       - name: Check resume sync availability
         id: resume_sync_check
         env:
-          RESUME_TOKEN: ${{ secrets.RESUME_READ_TOKEN }}
+          RESUME_TOKEN: ${{ secrets.RESUME_SYNC_TOKEN }}
         run: |
           if [ -n "$RESUME_TOKEN" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
             echo "Resume sync ENABLED — pulling latest from gupta-kush/kush-gupta-resume"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "RESUME_READ_TOKEN not set — using committed public/resume.pdf as fallback"
+            echo "RESUME_SYNC_TOKEN not set — using committed public/resume.pdf as fallback"
           fi
 
       - name: Sync resume PDF from private repo
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: gupta-kush/kush-gupta-resume
-          token: ${{ secrets.RESUME_READ_TOKEN }}
+          token: ${{ secrets.RESUME_SYNC_TOKEN }}
           path: .resume-src
           sparse-checkout: |
             Kush_Gupta_resume.pdf
