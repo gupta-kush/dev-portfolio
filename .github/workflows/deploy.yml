@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Gate the resume-sync steps behind the secret. If RESUME_SYNC_TOKEN
       # isn't set yet, the build falls back to the committed
@@ -43,7 +43,7 @@ jobs:
 
       - name: Sync resume PDF from private repo
         if: steps.resume_sync_check.outputs.enabled == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: gupta-kush/kush-gupta-resume
           token: ${{ secrets.RESUME_SYNC_TOKEN }}
@@ -59,7 +59,7 @@ jobs:
           rm -rf .resume-src
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -71,10 +71,10 @@ jobs:
         run: npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -87,4 +87,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
