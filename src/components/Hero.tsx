@@ -1,9 +1,10 @@
 // Full-bleed photo crossfade + giant kinetic name + viewfinder corners +
-// live exposure strip + project peek slabs along the bottom.
+// live exposure strip + a 3-slab bottom bar: GitHub / LinkedIn / accent
+// "see the work" CTA that scrolls into the site.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { HERO_PHOTOS } from "../photos";
-import { PROJECTS_BRIEF } from "../content";
+import { PROFILE } from "../content";
 
 type Corner = { top?: number; left?: number; right?: number; bottom?: number; b: "tl" | "tr" | "bl" | "br" };
 
@@ -112,7 +113,7 @@ function KineticName() {
       <div
         style={{
           fontFamily: "var(--mono)",
-          fontSize: "clamp(11px, 0.95vw, 14px)",
+          fontSize: "clamp(12px, 1vw, 14px)",
           letterSpacing: "0.34em",
           marginTop: 22,
           paddingLeft: 8,
@@ -140,7 +141,7 @@ function ExposureStrip({ meta }: { meta: string }) {
         gap: "clamp(10px, 2vw, 22px)",
         flexWrap: "wrap",
         fontFamily: "var(--mono)",
-        fontSize: "clamp(9px, 1.2vw, 11px)",
+        fontSize: "clamp(10px, 1.3vw, 12px)",
         letterSpacing: "0.2em",
         color: "rgba(255,255,255,.78)",
       }}
@@ -153,7 +154,20 @@ function ExposureStrip({ meta }: { meta: string }) {
   );
 }
 
-function HeroPeekSlabs() {
+function HeroBottomBar() {
+  const strip = (u: string) => u.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  const profiles = [
+    { tag: "↗ CODE", label: "GITHUB", sub: strip(PROFILE.github), href: PROFILE.github },
+    { tag: "↗ CONNECT", label: "LINKEDIN", sub: strip(PROFILE.linkedin), href: PROFILE.linkedin },
+  ];
+
+  // Primary CTA scrolls into the first section rather than changing the hash,
+  // matching how TopNav anchors behave (keeps the router on "#/").
+  const scrollToProjects = (e: MouseEvent) => {
+    e.preventDefault();
+    document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div
       style={{
@@ -168,14 +182,17 @@ function HeroPeekSlabs() {
         fontFamily: "var(--mono)",
       }}
     >
-      {PROJECTS_BRIEF.map((p) => (
+      {profiles.map((l) => (
         <a
-          key={p.n}
-          href={`#/case/${p.id}`}
+          key={l.label}
+          href={l.href}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
-            padding: "12px 14px",
+            padding: "14px 16px",
             border: "1px solid rgba(255,255,255,.4)",
             background: "rgba(0,0,0,.32)",
+            color: "#fff",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
             transition: "border-color .25s, background .25s, transform .25s",
@@ -191,15 +208,46 @@ function HeroPeekSlabs() {
             e.currentTarget.style.transform = "";
           }}
         >
-          <div style={{ fontSize: 10, opacity: 0.58, letterSpacing: "0.22em" }}>{p.n} —</div>
-          <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.04em", marginTop: 4 }}>
-            {p.t.toUpperCase()}
+          <div style={{ fontSize: 11, opacity: 0.58, letterSpacing: "0.22em" }}>{l.tag}</div>
+          <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "0.06em", marginTop: 5 }}>
+            {l.label}
           </div>
-          <div style={{ fontSize: 10, opacity: 0.68, marginTop: 4, letterSpacing: "0.05em" }}>
-            {p.lang} · {p.stat}
+          <div style={{ fontSize: 11, opacity: 0.68, marginTop: 4, letterSpacing: "0.04em" }}>
+            {l.sub}
           </div>
         </a>
       ))}
+
+      {/* Primary action — accent-filled, the obvious "way in" for new visitors. */}
+      <a
+        href="#projects"
+        onClick={scrollToProjects}
+        style={{
+          padding: "14px 16px",
+          border: "1px solid var(--accent)",
+          background: "var(--accent)",
+          color: "var(--ink)",
+          transition: "border-color .25s, background .25s, transform .25s",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "var(--accent-warm)";
+          e.currentTarget.style.borderColor = "var(--accent-warm)";
+          e.currentTarget.style.transform = "translateY(-2px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "var(--accent)";
+          e.currentTarget.style.borderColor = "var(--accent)";
+          e.currentTarget.style.transform = "";
+        }}
+      >
+        <div style={{ fontSize: 11, opacity: 0.62, letterSpacing: "0.22em" }}>↓ DEVELOP</div>
+        <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.06em", marginTop: 5 }}>
+          SEE MY WORK
+        </div>
+        <div style={{ fontSize: 11, opacity: 0.72, marginTop: 4, letterSpacing: "0.04em" }}>
+          projects · pics · resume
+        </div>
+      </a>
     </div>
   );
 }
@@ -268,7 +316,7 @@ export function Hero() {
       <ViewfinderCorners />
       <KineticName />
       <ExposureStrip meta={photos[idx].meta} />
-      <HeroPeekSlabs />
+      <HeroBottomBar />
 
       <div
         style={{
@@ -300,7 +348,7 @@ export function Hero() {
         <div
           style={{
             fontFamily: "var(--mono)",
-            fontSize: 9,
+            fontSize: 10,
             letterSpacing: "0.2em",
             color: "rgba(255,255,255,.5)",
             marginTop: 6,
@@ -310,23 +358,6 @@ export function Hero() {
         </div>
       </div>
 
-      <div
-        className="scroll-hint hide-on-mobile"
-        style={{
-          position: "absolute",
-          right: "clamp(16px, 3vw, 32px)",
-          bottom: 168,
-          zIndex: 10,
-          fontFamily: "var(--mono)",
-          fontSize: 10,
-          letterSpacing: "0.28em",
-          color: "rgba(255,255,255,.62)",
-          writingMode: "vertical-rl",
-          transform: "rotate(180deg)",
-        }}
-      >
-        ↓ SCROLL TO DEVELOP
-      </div>
     </section>
   );
 }
