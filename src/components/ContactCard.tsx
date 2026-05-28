@@ -99,7 +99,7 @@ export function ContactCard() {
           <div
             style={{
               fontFamily: "var(--mono)",
-              fontSize: 9.5,
+              fontSize: 11,
               letterSpacing: "0.24em",
               marginTop: 8,
               opacity: 0.55,
@@ -121,7 +121,7 @@ export function ContactCard() {
             columnGap: 18,
             rowGap: 8,
             fontFamily: "var(--mono)",
-            fontSize: 11,
+            fontSize: 12,
             lineHeight: 1.4,
             alignItems: "baseline",
           }}
@@ -153,7 +153,7 @@ export function ContactCard() {
             border: "none",
             padding: "18px 24px",
             fontFamily: "var(--mono)",
-            fontSize: 12,
+            fontSize: 13,
             letterSpacing: "0.24em",
             textTransform: "uppercase",
             cursor: "pointer",
@@ -204,7 +204,7 @@ export function ContactCard() {
                 color: "var(--paper)",
                 opacity: 0.5,
                 fontFamily: "var(--mono)",
-                fontSize: 10,
+                fontSize: 11,
                 letterSpacing: "0.2em",
               }}
             >
@@ -256,7 +256,7 @@ export function ContactCard() {
             <div
               style={{
                 fontFamily: "var(--mono)",
-                fontSize: 9.5,
+                fontSize: 11,
                 letterSpacing: "0.18em",
                 opacity: status === "error" ? 0.9 : 0.4,
                 color: status === "error" ? "var(--accent-warm)" : "var(--paper)",
@@ -278,7 +278,7 @@ export function ContactCard() {
                 border: "none",
                 cursor: status === "sending" || status === "sent" ? "default" : "pointer",
                 fontFamily: "var(--mono)",
-                fontSize: 11,
+                fontSize: 12,
                 letterSpacing: "0.22em",
                 opacity: status === "sending" ? 0.7 : 1,
                 transition: "background .2s, opacity .2s",
@@ -313,7 +313,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <div
         style={{
           fontFamily: "var(--mono)",
-          fontSize: 9,
+          fontSize: 11,
           letterSpacing: "0.2em",
           opacity: 0.5,
           color: "var(--paper)",

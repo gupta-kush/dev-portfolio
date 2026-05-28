@@ -22,7 +22,7 @@ function CaseSection({ p }: { p: Project }) {
           flexWrap: "wrap",
           gap: 8,
           fontFamily: "var(--mono)",
-          fontSize: 11,
+          fontSize: 12,
           letterSpacing: "0.22em",
           color: "var(--paper-soft)",
           marginBottom: 40,
@@ -91,7 +91,7 @@ function CaseSection({ p }: { p: Project }) {
             <div
               style={{
                 fontFamily: "var(--mono)",
-                fontSize: 10,
+                fontSize: 11,
                 letterSpacing: "0.24em",
                 color: "var(--paper-soft)",
                 marginBottom: 12,
@@ -122,7 +122,7 @@ function CaseSection({ p }: { p: Project }) {
           justifyContent: "space-between",
           alignItems: "center",
           fontFamily: "var(--mono)",
-          fontSize: 11,
+          fontSize: 12,
           letterSpacing: "0.18em",
           flexWrap: "wrap",
           gap: 12,
@@ -167,7 +167,7 @@ function CaseFooter({ p }: { p: Project }) {
           <div
             style={{
               fontFamily: "var(--mono)",
-              fontSize: 10,
+              fontSize: 11,
               letterSpacing: "0.22em",
               color: "var(--paper-soft)",
               marginBottom: 8,
@@ -196,7 +196,7 @@ function CaseFooter({ p }: { p: Project }) {
           <div
             style={{
               fontFamily: "var(--mono)",
-              fontSize: 10,
+              fontSize: 11,
               letterSpacing: "0.22em",
               color: "var(--paper-soft)",
               marginBottom: 8,

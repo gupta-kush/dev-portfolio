@@ -26,7 +26,7 @@ export function CV() {
             display: "flex",
             justifyContent: "space-between",
             fontFamily: "var(--mono)",
-            fontSize: 11,
+            fontSize: 12,
             letterSpacing: "0.22em",
             color: "var(--paper-soft)",
             borderTop: "1.5px solid var(--ink)",
@@ -97,7 +97,7 @@ export function CV() {
                 <div
                   style={{
                     fontFamily: "var(--mono)",
-                    fontSize: 11,
+                    fontSize: 12,
                     letterSpacing: "0.18em",
                     color: "var(--paper-soft)",
                   }}
@@ -111,7 +111,7 @@ export function CV() {
                   <div
                     style={{
                       fontFamily: "var(--mono)",
-                      fontSize: 11,
+                      fontSize: 12,
                       color: "var(--paper-soft)",
                       marginTop: 4,
                       letterSpacing: "0.05em",
