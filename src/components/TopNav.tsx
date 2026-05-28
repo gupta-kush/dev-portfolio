@@ -68,7 +68,7 @@ export function TopNav({ route }: Props) {
         alignItems: "center",
         gap: 12,
         fontFamily: "var(--mono)",
-        fontSize: 13,
+        fontSize: 15,
         letterSpacing: "0.22em",
         color: fg,
         background: bg,
@@ -142,9 +142,9 @@ export function TopNav({ route }: Props) {
               background: "transparent",
               color: "inherit",
               border: "1px solid currentColor",
-              padding: "7px 12px",
+              padding: "8px 14px",
               fontFamily: "var(--mono)",
-              fontSize: 12,
+              fontSize: 14,
               letterSpacing: "0.22em",
               cursor: "pointer",
             }}
@@ -180,9 +180,9 @@ export function TopNav({ route }: Props) {
               onClick={onAnchorClick(item.id)}
               style={{
                 fontFamily: "var(--mono)",
-                fontSize: 15,
+                fontSize: 17,
                 letterSpacing: "0.22em",
-                padding: "7px 0",
+                padding: "8px 0",
               }}
             >
               {item.label}

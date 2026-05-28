@@ -65,7 +65,7 @@ export function Lightbox({ photos, idx, onClose, onNav }: Props) {
             display: "flex",
             justifyContent: "space-between",
             fontFamily: "var(--mono)",
-            fontSize: 12,
+            fontSize: 13,
             letterSpacing: "0.2em",
             color: "rgba(255,255,255,.7)",
           }}

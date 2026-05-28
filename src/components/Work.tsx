@@ -29,7 +29,7 @@ export function Work() {
             display: "flex",
             justifyContent: "space-between",
             fontFamily: "var(--mono)",
-            fontSize: 12,
+            fontSize: 13,
             letterSpacing: "0.22em",
             color: "var(--paper-soft)",
             borderTop: "1.5px solid var(--ink)",
@@ -158,7 +158,7 @@ export function Work() {
             <div
               style={{
                 fontFamily: "var(--mono)",
-                fontSize: 12,
+                fontSize: 13,
                 letterSpacing: "0.16em",
                 color: "var(--paper-soft)",
                 display: "flex",
@@ -175,7 +175,7 @@ export function Work() {
           <div
             style={{
               fontFamily: "var(--mono)",
-              fontSize: 12,
+              fontSize: 13,
               letterSpacing: "0.18em",
               textAlign: isMobile ? "left" : "right",
               display: "flex",

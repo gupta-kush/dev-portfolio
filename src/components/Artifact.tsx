@@ -26,7 +26,7 @@ function ArtifactFrame({ title, kind, children }: { title: string; kind: string;
           borderBottom: "1px solid var(--ink)",
           background: "var(--ink)",
           color: "var(--paper)",
-          fontSize: 11,
+          fontSize: 13,
           letterSpacing: "0.22em",
         }}
       >

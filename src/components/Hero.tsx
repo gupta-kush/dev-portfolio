@@ -113,7 +113,7 @@ function KineticName() {
       <div
         style={{
           fontFamily: "var(--mono)",
-          fontSize: "clamp(12px, 1vw, 14px)",
+          fontSize: "clamp(13px, 1.1vw, 15px)",
           letterSpacing: "0.34em",
           marginTop: 22,
           paddingLeft: 8,
@@ -141,7 +141,7 @@ function ExposureStrip({ meta }: { meta: string }) {
         gap: "clamp(10px, 2vw, 22px)",
         flexWrap: "wrap",
         fontFamily: "var(--mono)",
-        fontSize: "clamp(10px, 1.3vw, 12px)",
+        fontSize: "clamp(12px, 1.4vw, 14px)",
         letterSpacing: "0.2em",
         color: "rgba(255,255,255,.78)",
       }}
@@ -208,11 +208,11 @@ function HeroBottomBar() {
             e.currentTarget.style.transform = "";
           }}
         >
-          <div style={{ fontSize: 11, opacity: 0.58, letterSpacing: "0.22em" }}>{l.tag}</div>
+          <div style={{ fontSize: 13, opacity: 0.62, letterSpacing: "0.22em" }}>{l.tag}</div>
           <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "0.06em", marginTop: 5 }}>
             {l.label}
           </div>
-          <div style={{ fontSize: 11, opacity: 0.68, marginTop: 4, letterSpacing: "0.04em" }}>
+          <div style={{ fontSize: 13, opacity: 0.72, marginTop: 4, letterSpacing: "0.04em" }}>
             {l.sub}
           </div>
         </a>
@@ -242,11 +242,11 @@ function HeroBottomBar() {
           e.currentTarget.style.transform = "";
         }}
       >
-        <div style={{ fontSize: 11, opacity: 0.85, letterSpacing: "0.22em", color: "var(--accent)" }}>↓ DEVELOP</div>
+        <div style={{ fontSize: 13, opacity: 0.9, letterSpacing: "0.22em", color: "var(--accent)" }}>↓ DEVELOP</div>
         <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.06em", marginTop: 5, color: "var(--accent)" }}>
           SEE MY WORK
         </div>
-        <div style={{ fontSize: 11, opacity: 0.72, marginTop: 4, letterSpacing: "0.04em" }}>
+        <div style={{ fontSize: 13, opacity: 0.78, marginTop: 4, letterSpacing: "0.04em" }}>
           projects · pics · resume
         </div>
       </a>
@@ -350,7 +350,7 @@ export function Hero() {
         <div
           style={{
             fontFamily: "var(--mono)",
-            fontSize: 10,
+            fontSize: 12,
             letterSpacing: "0.2em",
             color: "rgba(255,255,255,.5)",
             marginTop: 6,
